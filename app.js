@@ -90,18 +90,60 @@ const doc = {
 // Helper: LocalStorage Products Wrapper
 // ----------------------------------------------------------------
 function getStoredProducts() {
-  const dbVersion = '5'; // Force upgrade to version 5 for the new 216 product catalog
   const stored = localStorage.getItem('fgoparfum_products');
-  const storedVer = localStorage.getItem('fgoparfum_db_version');
-  
-  if (!stored || storedVer !== dbVersion) {
+  if (!stored) {
     localStorage.setItem('fgoparfum_products', JSON.stringify(PRODUCTS));
-    localStorage.setItem('fgoparfum_db_version', dbVersion);
     return PRODUCTS;
   }
   try {
-    return JSON.parse(stored);
+    const localList = JSON.parse(stored);
+    
+    // Create maps for efficient lookup
+    const codeMap = {};
+    PRODUCTS.forEach(p => { codeMap[p.id] = p; });
+    
+    const localMap = {};
+    localList.forEach(p => { localMap[p.id] = p; });
+    
+    const mergedProducts = [];
+    
+    // 1. Process latest master list from PRODUCTS (sync additions & updates)
+    PRODUCTS.forEach(codeProd => {
+      if (localMap[codeProd.id]) {
+        const localProd = localMap[codeProd.id];
+        // Keep user edits but update provider-controlled fields
+        localProd.name = codeProd.name;
+        localProd.image = codeProd.image;
+        localProd.size = codeProd.size;
+        localProd.categoryLabel = codeProd.categoryLabel;
+        localProd.familyLabel = codeProd.familyLabel;
+        localProd.notes = codeProd.notes || localProd.notes;
+        
+        // If it was approved locally (statusPending is false or undefined), keep it approved
+        if (localProd.statusPending === undefined || localProd.statusPending === false) {
+          localProd.statusPending = false;
+        } else {
+          localProd.statusPending = codeProd.statusPending || false;
+        }
+        
+        mergedProducts.push(localProd);
+      } else {
+        // Brand new product from provider: add directly
+        mergedProducts.push(codeProd);
+      }
+    });
+    
+    // 2. Add custom products and discard deleted provider ones
+    localList.forEach(localProd => {
+      if (localProd.id.startsWith('custom-')) {
+        mergedProducts.push(localProd);
+      }
+    });
+    
+    localStorage.setItem('fgoparfum_products', JSON.stringify(mergedProducts));
+    return mergedProducts;
   } catch (e) {
+    console.error("Error syncing catalog database:", e);
     return PRODUCTS;
   }
 }
@@ -582,6 +624,9 @@ function filterCatalog() {
   
   const allProducts = getStoredProducts();
   const filtered = allProducts.filter(prod => {
+    // Exclude pending products from public catalog
+    if (prod.statusPending) return false;
+    
     // Category match
     const categoryMatch = (selectedCategory === 'all' || prod.category === selectedCategory);
     
@@ -946,17 +991,18 @@ function showQuizResults() {
   if (doc.quizProgress) doc.quizProgress.style.width = `100%`;
   
   const allProducts = getStoredProducts();
-  let filteredRecs = allProducts;
+  const activeProducts = allProducts.filter(p => !p.statusPending);
+  let filteredRecs = activeProducts;
   
   if (quizAnswers.recipient === 'masculino') {
-    filteredRecs = allProducts.filter(p => p.category === 'perfumes' && (p.id.includes('1million') || p.id.includes('blue') || p.id.includes('invictos')));
+    filteredRecs = activeProducts.filter(p => p.category === 'perfumes' && (p.id.includes('1million') || p.id.includes('blue') || p.id.includes('invictos')));
   } else if (quizAnswers.recipient === 'femenino') {
-    filteredRecs = allProducts.filter(p => p.category === 'perfumes' && (p.id.includes('lavida') || p.id.includes('aura')));
+    filteredRecs = activeProducts.filter(p => p.category === 'perfumes' && (p.id.includes('lavida') || p.id.includes('aura')));
   } else if (quizAnswers.recipient === 'home') {
-    filteredRecs = allProducts.filter(p => p.category === 'textiles' || p.category === 'difusores' || p.category === 'aerosoles');
+    filteredRecs = activeProducts.filter(p => p.category === 'textiles' || p.category === 'difusores' || p.category === 'aerosoles');
   }
   
-  if (filteredRecs.length === 0) filteredRecs = allProducts;
+  if (filteredRecs.length === 0) filteredRecs = activeProducts;
   
   let bestMatch = filteredRecs[0];
   let maxScore = -1;
@@ -1140,6 +1186,7 @@ function renderAdminTable(filterQuery = '') {
     if (prod.statusSold) badges.push('<span class="badge-admin sold">Vendido</span>');
     if (outOfStock) badges.push('<span class="badge-admin nostock">Sin Stock</span>');
     if (prod.statusOffer) badges.push('<span class="badge-admin offer">Oferta</span>');
+    if (prod.statusPending) badges.push('<span class="badge-admin pending">Pendiente</span>');
     
     // Quick "Republicar" button shows if item is sold or out of stock
     let republicarBtn = '';
@@ -1208,7 +1255,11 @@ function editProduct(productId) {
   if (!product) return;
   
   doc.adminFormPanel.classList.add('active');
-  doc.formActionTitle.textContent = "Editar Producto: " + product.name;
+  if (product.statusPending) {
+    doc.formActionTitle.innerHTML = `Editar Producto <span style="color:#ff9f43;font-size:0.8em;">(Pendiente de Publicación)</span>: ${product.name}`;
+  } else {
+    doc.formActionTitle.textContent = "Editar Producto: " + product.name;
+  }
   
   document.getElementById('form-product-id').value = product.id;
   document.getElementById('form-name').value = product.name;
@@ -1316,7 +1367,14 @@ function saveProductForm(e) {
         corazon: noteCorazon,
         fondo: noteFondo
       };
-      showToast("Producto actualizado con éxito");
+      
+      // Auto-approve product if it was pending
+      if (product.statusPending) {
+        product.statusPending = false;
+        showToast("Producto aprobado y publicado");
+      } else {
+        showToast("Producto actualizado con éxito");
+      }
     }
   } else {
     // Add new product

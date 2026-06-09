@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fgoparfum-cache-v1';
+const CACHE_NAME = 'fgoparfum-cache-v3'; // Incremented to v3 to clear previous cache versions
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -35,32 +35,38 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch events: Cache First, fallback to Network
+// Fetch events: Network First, falling back to Cache if offline
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests and local assets (ignore chrome extension schemes or external APIs if needed)
   if (event.request.method !== 'GET') return;
 
+  // Let browser extensions or external APIs pass through
+  if (!event.request.url.startsWith(self.location.origin) && !event.request.url.startsWith('https://dcdn-us.mitiendanube.com')) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      
-      return fetch(event.request).then((networkResponse) => {
-        // Cache new successful local requests dynamically (except things we don't want to cache)
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+    fetch(event.request)
+      .then((networkResponse) => {
+        // If request is successful, clone and put it in cache
+        if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // Fallback for offline if requesting HTML pages
-        if (event.request.headers.get('accept').includes('text/html')) {
-          return caches.match('./index.html');
-        }
-      });
-    })
+      })
+      .catch(() => {
+        // If offline or fetch fails, fallback to cache
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // Offline fallback for HTML pages
+          if (event.request.headers.get('accept')?.includes('text/html')) {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });
