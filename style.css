@@ -288,7 +288,7 @@ header.scrolled .logo-img {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.85)), url('https://dcdn-us.mitiendanube.com/stores/003/593/083/themes/style/2-slide-1769531218175-7802844703-c947e00c97be4dc04645058499b4fb8e1769531218-1024-1024.webp');
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.9)), url('./logotipo.jpeg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -2038,3 +2038,32 @@ footer {
     padding-top: 0;
   }
 }
+
+/* Autocomplete search results style */
+.db-search-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: var(--transition-fast);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+}
+
+.db-search-item:hover {
+  background-color: var(--accent-gold-light);
+  color: var(--accent-gold);
+}
+
+.db-search-item-name {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.db-search-item-meta {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+}
+

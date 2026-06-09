@@ -110,6 +110,13 @@ function saveStoredProducts(productsList) {
   localStorage.setItem('fgoparfum_products', JSON.stringify(productsList));
 }
 
+function loadHeroBackground() {
+  const heroElement = document.querySelector('.hero');
+  if (!heroElement) return;
+  const storedBg = localStorage.getItem('fgoparfum_hero_bg') || './logotipo.jpeg';
+  heroElement.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.9)), url('${storedBg}')`;
+}
+
 // ----------------------------------------------------------------
 // 1. Initial Setup & Event Listeners
 // ----------------------------------------------------------------
@@ -128,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Check standalone mode / iOS installation helper
   checkStandaloneStatus();
+  
+  // Load hero background
+  loadHeroBackground();
 });
 
 // Event Listeners Registration
@@ -349,6 +359,128 @@ function initEventListeners() {
   // File Upload listener for image importing
   if (doc.formImageFile) {
     doc.formImageFile.addEventListener('change', handleLocalImageImport);
+  }
+
+  // Hero Background Config
+  const btnSaveHeroBg = document.getElementById('btn-save-hero-bg');
+  const heroBgInput = document.getElementById('admin-hero-bg-input');
+  const heroBgFile = document.getElementById('admin-hero-bg-file');
+  
+  if (heroBgInput) {
+    heroBgInput.value = localStorage.getItem('fgoparfum_hero_bg') || './logotipo.jpeg';
+  }
+  
+  if (btnSaveHeroBg && heroBgInput) {
+    btnSaveHeroBg.addEventListener('click', () => {
+      const url = heroBgInput.value.trim();
+      localStorage.setItem('fgoparfum_hero_bg', url || './logotipo.jpeg');
+      loadHeroBackground();
+      showToast("Fondo del Hero actualizado con éxito");
+    });
+  }
+  
+  if (heroBgFile && heroBgInput) {
+    // Hidden file input click trigger
+    const btnUploadHeroBg = document.getElementById('btn-upload-hero-bg');
+    if (btnUploadHeroBg) {
+      btnUploadHeroBg.addEventListener('click', () => {
+        heroBgFile.click();
+      });
+    }
+    
+    heroBgFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target.result;
+        heroBgInput.value = base64;
+        localStorage.setItem('fgoparfum_hero_bg', base64);
+        loadHeroBackground();
+        showToast("Imagen de fondo cargada e instalada");
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Database Autocomplete Search for Product Form
+  const dbSearchInput = document.getElementById('form-db-search');
+  const dbSearchResults = document.getElementById('form-db-search-results');
+  
+  if (dbSearchInput && dbSearchResults) {
+    dbSearchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (!query) {
+        dbSearchResults.style.display = 'none';
+        dbSearchResults.innerHTML = '';
+        return;
+      }
+      
+      const matches = PRODUCTS.filter(p => p.name.toLowerCase().includes(query)).slice(0, 10);
+      if (matches.length === 0) {
+        dbSearchResults.style.display = 'block';
+        dbSearchResults.innerHTML = `
+          <div style="padding:0.75rem 1rem; color:var(--text-muted); font-size:0.75rem; text-align:center;">
+            No se encontraron fragancias en la base de datos
+          </div>
+        `;
+        return;
+      }
+      
+      dbSearchResults.style.display = 'block';
+      dbSearchResults.innerHTML = matches.map(prod => `
+        <div class="db-search-item" data-id="${prod.id}">
+          <div>
+            <span class="db-search-item-name">${prod.name}</span>
+            <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.1rem;">
+              ${prod.categoryLabel} / ${prod.size}
+            </div>
+          </div>
+          <span class="db-search-item-meta">${prod.familyLabel}</span>
+        </div>
+      `).join('');
+      
+      // Bind click handlers to items
+      dbSearchResults.querySelectorAll('.db-search-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const matchId = item.dataset.id;
+          const matchedProd = PRODUCTS.find(p => p.id === matchId);
+          if (matchedProd) {
+            // Auto fill form
+            document.getElementById('form-name').value = matchedProd.name;
+            document.getElementById('form-price').value = matchedProd.price;
+            document.getElementById('form-price-original').value = matchedProd.priceOriginal || '';
+            document.getElementById('form-category').value = matchedProd.category;
+            document.getElementById('form-family').value = matchedProd.family;
+            document.getElementById('form-size').value = matchedProd.size;
+            document.getElementById('form-image').value = matchedProd.image;
+            document.getElementById('form-description').value = matchedProd.description;
+            
+            document.getElementById('form-note-salida').value = matchedProd.notes ? matchedProd.notes.salida : '';
+            document.getElementById('form-note-corazon').value = matchedProd.notes ? matchedProd.notes.corazon : '';
+            document.getElementById('form-note-fondo').value = matchedProd.notes ? matchedProd.notes.fondo : '';
+            
+            // Check status offer if original price exists
+            if (matchedProd.priceOriginal && matchedProd.priceOriginal > matchedProd.price) {
+              document.getElementById('form-status-offer').checked = true;
+            }
+            
+            showToast(`Formulario completado con ${matchedProd.name}`);
+          }
+          dbSearchResults.style.display = 'none';
+          dbSearchResults.innerHTML = '';
+          dbSearchInput.value = ''; // Clear search bar
+        });
+      });
+    });
+    
+    // Close results dropdown on clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dbSearchInput.contains(e.target) && !dbSearchResults.contains(e.target)) {
+        dbSearchResults.style.display = 'none';
+      }
+    });
   }
 }
 
@@ -947,6 +1079,13 @@ function checkAdminPassword() {
     doc.adminAuthView.style.display = 'none';
     doc.adminDashboardView.style.display = 'block';
     isAdminAuthenticated = true;
+    
+    // Pre-fill the hero bg input field
+    const heroBgInput = document.getElementById('admin-hero-bg-input');
+    if (heroBgInput) {
+      heroBgInput.value = localStorage.getItem('fgoparfum_hero_bg') || './logotipo.jpeg';
+    }
+    
     renderAdminTable();
     showToast("Acceso Autorizado");
   } else {

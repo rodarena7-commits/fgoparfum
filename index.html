@@ -336,6 +336,22 @@
           <button class="btn-admin secondary" id="btn-admin-reset">Restablecer Catálogo</button>
         </div>
         
+        <!-- Web General Configuration (Hero Background) -->
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 1.5rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; border-radius: 4px;">
+          <h3 style="font-family: var(--font-serif); font-size: 1rem; color: var(--accent-gold); margin: 0;"><i class="fas fa-cog"></i> Configuración de la Web</h3>
+          <div style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; width: 100%;">
+            <div class="form-group" style="flex-grow: 1; margin: 0; min-width: 250px;">
+              <label for="admin-hero-bg-input" style="font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.4rem; display: block; letter-spacing: 0.1em; color: var(--text-secondary);">Imagen de Fondo del Hero (URL o Archivo)</label>
+              <input type="text" class="form-control" id="admin-hero-bg-input" placeholder="Ej. ./logotipo.jpeg o URL de imagen de la web">
+            </div>
+            <div class="form-group" style="margin: 0; min-width: 140px;">
+              <input type="file" id="admin-hero-bg-file" accept="image/*" style="display: none;">
+              <button type="button" class="btn-admin secondary" id="btn-upload-hero-bg" style="height: 40px; font-size: 0.7rem; width: 100%;"><i class="fas fa-upload"></i> Subir Imagen</button>
+            </div>
+            <button type="button" class="btn-admin primary" id="btn-save-hero-bg" style="height: 40px; font-size: 0.7rem; min-width: 130px;">Guardar Fondo</button>
+          </div>
+        </div>
+        
         <!-- Actions & Search inside Admin -->
         <div class="admin-actions-bar">
           <button class="btn-admin primary" id="btn-admin-add-toggle">
@@ -352,6 +368,13 @@
           <h3 style="font-family: var(--font-serif); margin-bottom: 1.5rem; color: var(--accent-gold);" id="form-action-title">Añadir Nuevo Producto</h3>
           <form id="admin-product-form">
             <input type="hidden" id="form-product-id">
+            
+            <!-- Database Search Autocomplete -->
+            <div class="form-group full-width" style="margin-bottom: 1.5rem; position: relative; width: 100%; grid-column: 1 / -1;">
+              <label for="form-db-search" style="color: var(--accent-gold); font-weight: 600; font-size: 0.75rem; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: block;"><i class="fas fa-search"></i> Buscar y Autorellenar desde Base de Datos (216 Fragancias)</label>
+              <input type="text" class="form-control" id="form-db-search" placeholder="Escribe el nombre del perfume... (Ej. Sauv, One Million, Cony, Erba, etc.)" autocomplete="off" style="border-color: var(--border-gold);">
+              <div id="form-db-search-results" style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 250px; overflow-y: auto; background-color: var(--bg-secondary); border: 1px solid var(--accent-gold); z-index: 1000; box-shadow: var(--shadow-modal); border-radius: 0 0 4px 4px;"></div>
+            </div>
             
             <div class="admin-form-grid">
               <div class="form-group half-width">
