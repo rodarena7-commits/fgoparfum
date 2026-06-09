@@ -90,9 +90,13 @@ const doc = {
 // Helper: LocalStorage Products Wrapper
 // ----------------------------------------------------------------
 function getStoredProducts() {
+  const dbVersion = '5'; // Force upgrade to version 5 for the new 216 product catalog
   const stored = localStorage.getItem('fgoparfum_products');
-  if (!stored) {
+  const storedVer = localStorage.getItem('fgoparfum_db_version');
+  
+  if (!stored || storedVer !== dbVersion) {
     localStorage.setItem('fgoparfum_products', JSON.stringify(PRODUCTS));
+    localStorage.setItem('fgoparfum_db_version', dbVersion);
     return PRODUCTS;
   }
   try {
@@ -387,9 +391,9 @@ function renderProducts(productsList) {
       badgesHtml += `<span class="main-badge badge-offer">Oferta</span>`;
     }
     
-    // Render discount price if offer and original price is configured
+    // Render discount price if original price is configured and is greater than price
     let priceHtml = `<span class="product-card-price">${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</span>`;
-    if (prod.statusOffer && prod.priceOriginal && prod.priceOriginal > prod.price) {
+    if (prod.priceOriginal && prod.priceOriginal > prod.price) {
       priceHtml = `
         <div style="display:flex; flex-direction:column; align-items:flex-start;">
           <span style="font-size:0.75rem; text-decoration:line-through; color:var(--text-secondary); line-height:1;">${CONFIG.currency}${prod.priceOriginal.toLocaleString('es-AR')}</span>
@@ -501,7 +505,7 @@ function openProductDetail(productId) {
   
   // Set price markup for modal
   let priceMarkup = `<span class="modal-price">${CONFIG.currency}${product.price.toLocaleString('es-AR')}</span>`;
-  if (product.statusOffer && product.priceOriginal && product.priceOriginal > product.price) {
+  if (product.priceOriginal && product.priceOriginal > product.price) {
     priceMarkup = `
       <div style="display:flex; align-items:baseline; gap:0.75rem;">
         <span class="modal-price" style="color:var(--accent-gold); font-weight:700;">${CONFIG.currency}${product.price.toLocaleString('es-AR')}</span>
@@ -530,15 +534,15 @@ function openProductDetail(productId) {
         <h4 class="pyramid-title">Pirámide Olfativa</h4>
         <div class="pyramid-note">
           <strong>Notas de Salida:</strong>
-          <span>${product.notes.salida}</span>
+          <span>${product.notes?.salida || 'No disponible'}</span>
         </div>
         <div class="pyramid-note">
           <strong>Corazón:</strong>
-          <span>${product.notes.corazon}</span>
+          <span>${product.notes?.corazon || 'No disponible'}</span>
         </div>
         <div class="pyramid-note">
           <strong>Notas de Fondo:</strong>
-          <span>${product.notes.fondo}</span>
+          <span>${product.notes?.fondo || 'No disponible'}</span>
         </div>
       </div>
       
@@ -864,6 +868,16 @@ function showQuizResults() {
       badgesHtml += `<span class="main-badge badge-offer">Oferta</span>`;
     }
 
+    let recommendedPriceHtml = `<span class="product-card-price">${CONFIG.currency}${bestMatch.price.toLocaleString('es-AR')}</span>`;
+    if (bestMatch.priceOriginal && bestMatch.priceOriginal > bestMatch.price) {
+      recommendedPriceHtml = `
+        <div style="display:flex; flex-direction:column; align-items:flex-start;">
+          <span style="font-size:0.75rem; text-decoration:line-through; color:var(--text-secondary); line-height:1;">${CONFIG.currency}${bestMatch.priceOriginal.toLocaleString('es-AR')}</span>
+          <span class="product-card-price" style="color:var(--accent-gold); font-weight:700;">${CONFIG.currency}${bestMatch.price.toLocaleString('es-AR')}</span>
+        </div>
+      `;
+    }
+
     doc.recommendedContainer.innerHTML = `
       <div class="product-card" style="margin: 0 auto; text-align: left; max-width: 300px;">
         <div class="product-card-badges">${badgesHtml}</div>
@@ -881,7 +895,7 @@ function showQuizResults() {
           <h3 class="product-card-title">${bestMatch.name}</h3>
           <span class="product-card-scent">${bestMatch.familyLabel}</span>
           <div class="product-card-bottom">
-            <span class="product-card-price">${CONFIG.currency}${bestMatch.price.toLocaleString('es-AR')}</span>
+            ${recommendedPriceHtml}
             <span class="product-card-size">${bestMatch.size}</span>
           </div>
         </div>
