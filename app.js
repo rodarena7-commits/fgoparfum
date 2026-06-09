@@ -119,12 +119,7 @@ function getStoredProducts() {
         localProd.familyLabel = codeProd.familyLabel;
         localProd.notes = codeProd.notes || localProd.notes;
         
-        // If it was approved locally (statusPending is false or undefined), keep it approved
-        if (localProd.statusPending === undefined || localProd.statusPending === false) {
-          localProd.statusPending = false;
-        } else {
-          localProd.statusPending = codeProd.statusPending || false;
-        }
+        localProd.statusPending = false;
         
         mergedProducts.push(localProd);
       } else {
@@ -590,6 +585,9 @@ function renderProducts(productsList) {
             <button class="add-cart-btn-icon ${isBtnDisabledClass}" ${isBtnDisabledClass ? 'disabled' : ''} onclick="addToCart('${prod.id}', 1)" title="${btnText}">
               <i class="fas fa-shopping-bag"></i>
             </button>
+            <button class="add-cart-btn-icon whatsapp-btn-icon" onclick="contactProductWhatsApp('${prod.name.replace(/'/g, "\\'")}', '${prod.id}')" title="Consultar por WhatsApp">
+              <i class="fab fa-whatsapp"></i>
+            </button>
           </div>
         </div>
         <div class="product-card-info">
@@ -615,9 +613,6 @@ function filterCatalog() {
   
   const allProducts = getStoredProducts();
   const filtered = allProducts.filter(prod => {
-    // Exclude pending products from public catalog
-    if (prod.statusPending) return false;
-    
     // Category match
     const categoryMatch = (selectedCategory === 'all' || prod.category === selectedCategory);
     
@@ -708,8 +703,11 @@ function openProductDetail(productId) {
         </div>
       </div>
       
-      <div class="modal-actions">
+      <div class="modal-actions" style="display:flex; flex-direction:column; gap:0.5rem; width:100%;">
         ${btnMarkup}
+        <button class="modal-add-btn whatsapp-contact-btn" onclick="contactProductWhatsApp('${product.name.replace(/'/g, "\\'")}', '${product.id}')" style="border:none; display:flex; align-items:center; justify-content:center; gap:0.5rem; text-transform:uppercase; font-size:0.75rem; font-weight:700; letter-spacing:0.2em; height:50px; width:100%; transition:var(--transition-smooth); cursor:pointer;">
+          <i class="fab fa-whatsapp" style="font-size:1.2rem;"></i> Consultar por WhatsApp
+        </button>
       </div>
     </div>
   `;
@@ -927,9 +925,17 @@ function sendOrderToWhatsApp() {
   window.open(whatsappUrl, '_blank');
 }
 
+function contactProductWhatsApp(name, id) {
+  const message = `Hola! Quisiera consultar sobre el producto: *${name}* (ID: ${id}).`;
+  const encodedText = encodeURIComponent(message);
+  const whatsappUrl = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodedText}`;
+  window.open(whatsappUrl, '_blank');
+}
+
 window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.updateQty = updateQty;
+window.contactProductWhatsApp = contactProductWhatsApp;
 
 // ----------------------------------------------------------------
 // 5. Fragrance Finder Quiz Lógica
@@ -967,7 +973,7 @@ function showQuizResults() {
   if (doc.quizProgress) doc.quizProgress.style.width = `100%`;
   
   const allProducts = getStoredProducts();
-  const activeProducts = allProducts.filter(p => !p.statusPending);
+  const activeProducts = allProducts;
   let filteredRecs = activeProducts;
   
   if (quizAnswers.recipient === 'masculino') {
@@ -1036,6 +1042,9 @@ function showQuizResults() {
             <button class="quick-view-btn" onclick="openProductDetail('${bestMatch.id}')">Ver Detalles</button>
             <button class="add-cart-btn-icon ${isBtnDisabledClass}" ${isBtnDisabledClass ? 'disabled' : ''} onclick="addToCart('${bestMatch.id}', 1)" title="${btnText}">
               <i class="fas fa-shopping-bag"></i>
+            </button>
+            <button class="add-cart-btn-icon whatsapp-btn-icon" onclick="contactProductWhatsApp('${bestMatch.name.replace(/'/g, "\\'")}', '${bestMatch.id}')" title="Consultar por WhatsApp">
+              <i class="fab fa-whatsapp"></i>
             </button>
           </div>
         </div>
@@ -1154,7 +1163,6 @@ function renderAdminTable(filterQuery = '') {
     if (prod.statusSold) badges.push('<span class="badge-admin sold">Vendido</span>');
     if (outOfStock) badges.push('<span class="badge-admin nostock">Sin Stock</span>');
     if (prod.statusOffer) badges.push('<span class="badge-admin offer">Oferta</span>');
-    if (prod.statusPending) badges.push('<span class="badge-admin pending">Pendiente</span>');
     
     // Quick "Republicar" button shows if item is sold or out of stock
     let republicarBtn = '';
@@ -1219,11 +1227,7 @@ function editProduct(productId) {
   if (!product) return;
   
   doc.adminFormPanel.classList.add('active');
-  if (product.statusPending) {
-    doc.formActionTitle.innerHTML = `Editar Producto <span style="color:#ff9f43;font-size:0.8em;">(Pendiente de Publicación)</span>: ${product.name}`;
-  } else {
-    doc.formActionTitle.textContent = "Editar Producto: " + product.name;
-  }
+  doc.formActionTitle.textContent = "Editar Producto: " + product.name;
   
   document.getElementById('form-product-id').value = product.id;
   document.getElementById('form-name').value = product.name;
@@ -1331,14 +1335,7 @@ function saveProductForm(e) {
         corazon: noteCorazon,
         fondo: noteFondo
       };
-      
-      // Auto-approve product if it was pending
-      if (product.statusPending) {
-        product.statusPending = false;
-        showToast("Producto aprobado y publicado");
-      } else {
-        showToast("Producto actualizado con éxito");
-      }
+      showToast("Producto actualizado con éxito");
     }
   } else {
     // Add new product

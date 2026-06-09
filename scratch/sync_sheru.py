@@ -225,9 +225,8 @@ def main():
                 
             final_products.append(existing_prod)
         else:
-            # Brand new product from provider: Add it with statusPending = True
-            print(f"Nuevo producto detectado: {live_prod['name']}. Guardando como PENDIENTE.")
-            live_prod["statusPending"] = True
+            # Brand new product from provider: Add it directly
+            print(f"Nuevo producto detectado: {live_prod['name']}.")
             final_products.append(live_prod)
             
     # Process custom products (we must preserve custom products added by the admin!)
