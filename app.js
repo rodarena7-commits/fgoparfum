@@ -580,6 +580,9 @@ function renderProducts(productsList) {
         <div class="product-card-badges">${badgesHtml}</div>
         <div class="product-card-img-wrapper">
           <img src="${prod.image}" alt="${prod.name}" class="product-card-img" loading="lazy">
+          <button class="product-zoom-btn" onclick="zoomProductImage('${prod.image}')" title="Ampliar imagen">
+            <i class="fas fa-plus"></i>
+          </button>
           <div class="product-overlay-actions">
             <button class="quick-view-btn" onclick="openProductDetail('${prod.id}')">Descubrir Scent</button>
             <button class="add-cart-btn-icon ${isBtnDisabledClass}" ${isBtnDisabledClass ? 'disabled' : ''} onclick="addToCart('${prod.id}', 1)" title="${btnText}">
@@ -672,8 +675,11 @@ function openProductDetail(productId) {
   let priceMarkup = '';
 
   doc.modalBody.innerHTML = `
-    <div class="modal-img-wrapper">
+    <div class="modal-img-wrapper" style="position:relative;">
       <img src="${product.image}" alt="${product.name}" class="modal-img">
+      <button class="product-zoom-btn" onclick="zoomProductImage('${product.image}')" title="Ampliar imagen" style="top:15px; right:15px;">
+        <i class="fas fa-plus"></i>
+      </button>
     </div>
     <div class="modal-info">
       <span class="modal-category">${product.categoryLabel}</span>
@@ -941,6 +947,29 @@ window.removeFromCart = removeFromCart;
 window.updateQty = updateQty;
 window.contactProductWhatsApp = contactProductWhatsApp;
 
+function zoomProductImage(imageUrl) {
+  const lightbox = document.getElementById('image-lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  if (lightbox && lightboxImg) {
+    lightboxImg.src = imageUrl;
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById('image-lightbox');
+  if (lightbox) {
+    lightbox.classList.remove('open');
+    if ((!doc.modal || !doc.modal.classList.contains('open')) && (!doc.adminModal || !doc.adminModal.classList.contains('open')) && (!doc.cartDrawer || !doc.cartDrawer.classList.contains('open'))) {
+      document.body.style.overflow = '';
+    }
+  }
+}
+
+window.zoomProductImage = zoomProductImage;
+window.closeLightbox = closeLightbox;
+
 // ----------------------------------------------------------------
 // 5. Fragrance Finder Quiz Lógica
 // ----------------------------------------------------------------
@@ -1042,6 +1071,9 @@ function showQuizResults() {
         <div class="product-card-badges">${badgesHtml}</div>
         <div class="product-card-img-wrapper">
           <img src="${bestMatch.image}" alt="${bestMatch.name}" class="product-card-img">
+          <button class="product-zoom-btn" onclick="zoomProductImage('${bestMatch.image}')" title="Ampliar imagen">
+            <i class="fas fa-plus"></i>
+          </button>
           <div class="product-overlay-actions">
             <button class="quick-view-btn" onclick="openProductDetail('${bestMatch.id}')">Ver Detalles</button>
             <button class="add-cart-btn-icon ${isBtnDisabledClass}" ${isBtnDisabledClass ? 'disabled' : ''} onclick="addToCart('${bestMatch.id}', 1)" title="${btnText}">

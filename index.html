@@ -18,6 +18,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="FGOParfum">
   <link rel="apple-touch-icon" href="./logotipo.jpeg">
+  <link rel="icon" type="image/jpeg" href="./logotipo.jpeg">
+  <link rel="shortcut icon" href="./logotipo.jpeg" type="image/jpeg">
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="./style.css">
@@ -300,6 +302,12 @@
     <div class="modal-content" id="modal-content-body">
       <!-- Injected dynamically via app.js -->
     </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div id="image-lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightbox-img" src="" alt="Imagen ampliada">
   </div>
 
   <!-- Admin Panel Modal -->
