@@ -471,7 +471,7 @@ function initEventListeners() {
           <div>
             <span class="db-search-item-name">${prod.name}</span>
             <div style="font-size:0.65rem; color:var(--text-secondary); margin-top:0.1rem;">
-              ${prod.categoryLabel} / ${prod.size}
+              ${prod.categoryLabel}${prod.size ? ` / ${prod.size}` : ''}
             </div>
           </div>
           <span class="db-search-item-meta">${prod.familyLabel}</span>
@@ -597,7 +597,7 @@ function renderProducts(productsList) {
           ${stockWarningHtml}
           <div class="product-card-bottom" style="margin-top:auto;">
             ${priceHtml}
-            <span class="product-card-size">${prod.size}</span>
+            ${prod.size ? `<span class="product-card-size">${prod.size}</span>` : ''}
           </div>
         </div>
       </div>
@@ -682,7 +682,7 @@ function openProductDetail(productId) {
       
       <div class="modal-price-row">
         ${priceMarkup}
-        <span class="modal-size">Contenido: ${product.size}</span>
+        ${product.size ? `<span class="modal-size">Contenido: ${product.size}</span>` : ''}
       </div>
       
       <p class="modal-description">${product.description}</p>
@@ -881,7 +881,7 @@ function updateCartUI() {
                 <i class="far fa-trash-alt"></i>
               </button>
             </div>
-            <span class="cart-item-meta">${item.product.categoryLabel} / ${item.product.size}</span>
+            <span class="cart-item-meta">${item.product.categoryLabel}${item.product.size ? ` / ${item.product.size}` : ''}</span>
           </div>
           <div class="cart-item-qty-price">
             <div class="qty-control">
@@ -909,7 +909,11 @@ function sendOrderToWhatsApp() {
   cart.forEach((item, index) => {
     message += `*${index + 1}. ${item.product.name}*\n`;
     message += `   • Cantidad: ${item.quantity}\n`;
-    message += `   • Medida: ${item.product.size}\n\n`;
+    if (item.product.size) {
+      message += `   • Medida: ${item.product.size}\n\n`;
+    } else {
+      message += `\n`;
+    }
   });
   
   message += `━━━━━━━━━━━━━━━━━━━━━\n`;
@@ -1054,7 +1058,7 @@ function showQuizResults() {
           <span class="product-card-scent">${bestMatch.familyLabel}</span>
           <div class="product-card-bottom">
             ${recommendedPriceHtml}
-            <span class="product-card-size">${bestMatch.size}</span>
+            ${bestMatch.size ? `<span class="product-card-size">${bestMatch.size}</span>` : ''}
           </div>
         </div>
       </div>
@@ -1188,7 +1192,7 @@ function renderAdminTable(filterQuery = '') {
           </div>
         </td>
         <td>${prod.categoryLabel}</td>
-        <td>${prod.size}</td>
+        <td>${prod.size || '-'}</td>
         <td>${stock}</td>
         <td>
           <div class="admin-badges-cell">

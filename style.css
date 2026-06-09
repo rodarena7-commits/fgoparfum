@@ -1618,6 +1618,59 @@ footer {
   :root {
     --header-height: 70px;
   }
+
+  /* Mobile Sticky Search & Filter Adjustments */
+  .filter-bar {
+    display: contents !important;
+  }
+
+  .category-filters {
+    width: 100% !important;
+    margin-bottom: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+  }
+
+  .search-filter-wrapper {
+    position: sticky !important;
+    top: 69px !important; /* Just below mobile header */
+    z-index: 900 !important;
+    background-color: var(--bg-primary) !important;
+    padding: 0.8rem 2rem !important; /* Aligns contents with container padding */
+    border-bottom: 1px solid var(--border-color) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    width: 100vw !important;
+    margin-left: -2rem !important; /* Spans full screen width */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.6rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .search-input-container {
+    width: 100% !important;
+  }
+
+  .search-input {
+    font-size: 16px !important; /* Prevents auto-zoom in mobile browsers */
+    padding: 0.75rem 2.5rem 0.75rem 1rem !important;
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-radius: 4px !important;
+  }
+
+  .scent-family-select {
+    width: 100% !important;
+    font-size: 16px !important;
+    padding: 0.75rem 1rem !important;
+    background-color: var(--bg-secondary) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 4px !important;
+  }
   
   .logo-img {
     height: 55px;

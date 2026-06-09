@@ -56,17 +56,8 @@ def scrape_category_url(url, category, category_label, default_size, default_pri
                     else:
                         image_url = src
         
-        size = default_size
+        size = ""
         name_lower = product_name.lower()
-        if '60ml' in name_lower: size = '60ml'
-        elif '125ml' in name_lower: size = '125ml'
-        elif '250ml' in name_lower: size = '250ml'
-        elif '500ml' in name_lower: size = '500ml'
-        elif '100ml' in name_lower: size = '100ml'
-        elif '50ml' in name_lower: size = '50ml'
-        elif '10ml' in name_lower: size = '10ml'
-        elif '270ml' in name_lower: size = '270ml'
-        elif '12 u' in name_lower or '12u' in name_lower: size = '12 u.'
         
         if price == 0:
             price = default_price
