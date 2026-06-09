@@ -308,7 +308,26 @@
       <i class="fas fa-times"></i>
     </button>
     <div class="modal-content" style="display: block; max-height: 90vh; overflow-y: auto;">
-      <div class="modal-info" style="width: 100%; max-width: 100%; padding: 2.5rem; display: block;">
+      
+      <!-- Password Protection Gate -->
+      <div id="admin-auth-view" style="display: block; padding: 4rem 2.5rem; text-align: center; max-width: 420px; margin: 0 auto;">
+        <h2 class="modal-title" style="margin-bottom: 1rem; font-family: var(--font-serif); text-align: center;">Acceso Restringido</h2>
+        <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 2.5rem; line-height: 1.5;">Ingresa la clave de administrador de 4 dígitos para ingresar al panel de control.</p>
+        
+        <div class="form-group" style="margin-bottom: 1.5rem; text-align: left;">
+          <label for="admin-password-input" style="text-align: center; display: block; margin-bottom: 0.5rem;">Clave de Seguridad</label>
+          <input type="password" class="form-control" id="admin-password-input" maxlength="4" placeholder="••••" style="text-align: center; font-size: 1.8rem; letter-spacing: 0.4em; height: 55px;" required autocomplete="off">
+        </div>
+        
+        <div id="admin-auth-error" style="color: #ff4d4d; font-size: 0.75rem; margin-bottom: 1.5rem; display: none; font-weight: 600;">
+          <i class="fas fa-exclamation-circle"></i> Clave incorrecta. Inténtalo de nuevo.
+        </div>
+        
+        <button class="btn-admin primary" id="btn-admin-auth-submit" style="width: 100%; height: 50px; font-size: 0.75rem;">Desbloquear Panel</button>
+      </div>
+
+      <!-- Admin Dashboard View (Hidden initially) -->
+      <div class="modal-info" id="admin-dashboard-view" style="width: 100%; max-width: 100%; padding: 2.5rem; display: none;">
         <div class="admin-header">
           <div class="admin-title-row">
             <h2 class="modal-title" style="margin-bottom: 0;">Panel de Control</h2>
@@ -341,10 +360,20 @@
               </div>
               
               <div class="form-group">
-                <label for="form-price">Precio ($)</label>
-                <input type="number" class="form-control" id="form-price" required min="0" placeholder="Ej. 9500">
+                <label for="form-price">Precio Actual ($)</label>
+                <input type="number" class="form-control" id="form-price" required min="0" placeholder="Ej. 8000">
+              </div>
+
+              <div class="form-group">
+                <label for="form-price-original">Precio Original / Anterior ($)</label>
+                <input type="number" class="form-control" id="form-price-original" min="0" placeholder="Ej. 9500 (Tachado)">
               </div>
               
+              <div class="form-group">
+                <label for="form-stock-count">Stock (Unidades)</label>
+                <input type="number" class="form-control" id="form-stock-count" min="0" value="10" required placeholder="Ej. 10">
+              </div>
+
               <div class="form-group">
                 <label for="form-category">Categoría</label>
                 <select class="form-control" id="form-category" required>
@@ -375,14 +404,19 @@
                 <input type="text" class="form-control" id="form-size" required placeholder="Ej. 100ml o 250ml">
               </div>
               
-              <div class="form-group half-width">
+              <div class="form-group">
                 <label for="form-image">URL de la Imagen</label>
                 <input type="text" class="form-control" id="form-image" placeholder="Ej. ./assets/perfume_milano.png">
               </div>
+
+              <div class="form-group half-width">
+                <label for="form-image-file">o Importar Archivo de Imagen</label>
+                <input type="file" class="form-control" id="form-image-file" accept="image/*" style="padding: 0.5rem 1rem;">
+              </div>
               
-              <div class="form-checkbox-group">
+              <div class="form-checkbox-group full-width" style="padding-top: 0.5rem;">
                 <label class="checkbox-label">
-                  <input type="checkbox" id="form-status-offer"> En Oferta
+                  <input type="checkbox" id="form-status-offer"> En Oferta (Descuento)
                 </label>
                 <label class="checkbox-label">
                   <input type="checkbox" id="form-status-nostock"> Sin Stock
@@ -429,9 +463,9 @@
                 <th>Categoría</th>
                 <th>Precio</th>
                 <th>Medida</th>
-                <th>Familia</th>
+                <th>Stock</th>
                 <th>Estados</th>
-                <th style="text-align: right;">Acciones</th>
+                <th style="text-align: right; min-width: 140px;">Acciones</th>
               </tr>
             </thead>
             <tbody id="admin-table-body">

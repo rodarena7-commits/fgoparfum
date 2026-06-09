@@ -12,9 +12,11 @@ let quizAnswers = {
   notes: ''
 };
 
-// Admin states
+// Admin state
 let logoClicks = 0;
 let logoClickTimeout = null;
+let isAdminAuthenticated = false;
+let uploadedImageDataUrl = '';
 
 // DOM Elements
 const doc = {
@@ -70,6 +72,18 @@ const doc = {
   adminTableBody: document.getElementById('admin-table-body'),
   btnAdminFormCancel: document.getElementById('btn-admin-form-cancel'),
   formActionTitle: document.getElementById('form-action-title'),
+  
+  // Admin Auth Gate Elements
+  adminAuthView: document.getElementById('admin-auth-view'),
+  adminDashboardView: document.getElementById('admin-dashboard-view'),
+  adminPasswordInput: document.getElementById('admin-password-input'),
+  adminAuthError: document.getElementById('admin-auth-error'),
+  btnAdminAuthSubmit: document.getElementById('btn-admin-auth-submit'),
+  
+  // Admin Form Extra Elements
+  formImageFile: document.getElementById('form-image-file'),
+  formPriceOriginal: document.getElementById('form-price-original'),
+  formStockCount: document.getElementById('form-stock-count'),
 };
 
 // ----------------------------------------------------------------
@@ -294,12 +308,14 @@ function initEventListeners() {
       doc.formActionTitle.textContent = "Añadir Nuevo Producto";
       doc.adminProductForm.reset();
       document.getElementById('form-product-id').value = '';
+      uploadedImageDataUrl = '';
     });
   }
   if (doc.btnAdminFormCancel) {
     doc.btnAdminFormCancel.addEventListener('click', () => {
       doc.adminFormPanel.classList.remove('active');
       doc.adminProductForm.reset();
+      uploadedImageDataUrl = '';
     });
   }
   if (doc.adminSearchInput) {
@@ -309,6 +325,23 @@ function initEventListeners() {
   }
   if (doc.adminProductForm) {
     doc.adminProductForm.addEventListener('submit', saveProductForm);
+  }
+
+  // Admin Auth password gate
+  if (doc.btnAdminAuthSubmit) {
+    doc.btnAdminAuthSubmit.addEventListener('click', checkAdminPassword);
+  }
+  if (doc.adminPasswordInput) {
+    doc.adminPasswordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        checkAdminPassword();
+      }
+    });
+  }
+
+  // File Upload listener for image importing
+  if (doc.formImageFile) {
+    doc.formImageFile.addEventListener('change', handleLocalImageImport);
   }
 }
 
@@ -335,12 +368,15 @@ function renderProducts(productsList) {
     let isBtnDisabledClass = '';
     let btnText = 'Añadir';
     
+    // Automatically flag as out of stock if stockCount is 0
+    const outOfStock = prod.statusNoStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
+    
     if (prod.statusSold) {
       badgesHtml += `<span class="main-badge badge-sold">Vendido</span>`;
       isCardDisabledClass = 'card-disabled';
       isBtnDisabledClass = 'add-cart-btn-disabled';
       btnText = 'Vendido';
-    } else if (prod.statusNoStock) {
+    } else if (outOfStock) {
       badgesHtml += `<span class="main-badge badge-nostock">Sin Stock</span>`;
       isCardDisabledClass = 'card-disabled';
       isBtnDisabledClass = 'add-cart-btn-disabled';
@@ -349,6 +385,27 @@ function renderProducts(productsList) {
     
     if (prod.statusOffer) {
       badgesHtml += `<span class="main-badge badge-offer">Oferta</span>`;
+    }
+    
+    // Render discount price if offer and original price is configured
+    let priceHtml = `<span class="product-card-price">${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</span>`;
+    if (prod.statusOffer && prod.priceOriginal && prod.priceOriginal > prod.price) {
+      priceHtml = `
+        <div style="display:flex; flex-direction:column; align-items:flex-start;">
+          <span style="font-size:0.75rem; text-decoration:line-through; color:var(--text-secondary); line-height:1;">${CONFIG.currency}${prod.priceOriginal.toLocaleString('es-AR')}</span>
+          <span class="product-card-price" style="color:var(--accent-gold); font-weight:700;">${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</span>
+        </div>
+      `;
+    }
+
+    // Render stock warnings for low stock
+    let stockWarningHtml = '';
+    if (!prod.statusSold && !outOfStock && prod.stockCount !== undefined && prod.stockCount <= 3) {
+      stockWarningHtml = `
+        <div style="font-size:0.6rem; color:#ff9f43; font-weight:600; margin-top:0.4rem; letter-spacing:0.05em;">
+          <i class="fas fa-exclamation-triangle"></i> ¡Solo quedan ${prod.stockCount} u.!
+        </div>
+      `;
     }
     
     return `
@@ -367,8 +424,9 @@ function renderProducts(productsList) {
           <span class="product-card-category">${prod.categoryLabel}</span>
           <h3 class="product-card-title">${prod.name}</h3>
           <span class="product-card-scent">${prod.familyLabel}</span>
-          <div class="product-card-bottom">
-            <span class="product-card-price">${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</span>
+          ${stockWarningHtml}
+          <div class="product-card-bottom" style="margin-top:auto;">
+            ${priceHtml}
             <span class="product-card-size">${prod.size}</span>
           </div>
         </div>
@@ -413,26 +471,45 @@ function openProductDetail(productId) {
   
   let isBtnDisabled = '';
   let btnMarkup = '';
-  
+  const outOfStock = product.statusNoStock || (product.stockCount !== undefined && product.stockCount <= 0);
+
   if (product.statusSold) {
     isBtnDisabled = 'disabled style="background-color:#6c757d; cursor:not-allowed;"';
     btnMarkup = `<button class="modal-add-btn" ${isBtnDisabled}><i class="fas fa-ban"></i> Producto Vendido</button>`;
-  } else if (product.statusNoStock) {
+  } else if (outOfStock) {
     isBtnDisabled = 'disabled style="background-color:#6c757d; cursor:not-allowed;"';
     btnMarkup = `<button class="modal-add-btn" ${isBtnDisabled}><i class="fas fa-ban"></i> Sin Stock</button>`;
   } else {
+    // Show remaining stock limit in modal details
+    const maxQty = product.stockCount !== undefined ? product.stockCount : 10;
     btnMarkup = `
-      <div class="modal-qty">
-        <button class="modal-qty-btn" onclick="adjustModalQty(-1)">-</button>
-        <span class="modal-qty-val" id="modal-qty-value">1</span>
-        <button class="modal-qty-btn" onclick="adjustModalQty(1)">+</button>
+      <div class="modal-actions-container" style="display:flex; flex-direction:column; gap:0.5rem; width:100%;">
+        <div style="display:flex; gap:1rem; align-items:center; width:100%;">
+          <div class="modal-qty">
+            <button class="modal-qty-btn" onclick="adjustModalQty(-1)">-</button>
+            <span class="modal-qty-val" id="modal-qty-value" data-max="${maxQty}">1</span>
+            <button class="modal-qty-btn" onclick="adjustModalQty(1)">+</button>
+          </div>
+          <button class="modal-add-btn" onclick="addFromModal('${product.id}')">
+            <i class="fas fa-shopping-bag"></i> Agregar al Carrito
+          </button>
+        </div>
+        ${product.stockCount !== undefined ? `<span style="font-size:0.68rem; color:var(--accent-gold); font-style:italic;">Disponibles en stock: ${product.stockCount} unidades.</span>` : ''}
       </div>
-      <button class="modal-add-btn" onclick="addFromModal('${product.id}')">
-        <i class="fas fa-shopping-bag"></i> Agregar al Carrito
-      </button>
     `;
   }
   
+  // Set price markup for modal
+  let priceMarkup = `<span class="modal-price">${CONFIG.currency}${product.price.toLocaleString('es-AR')}</span>`;
+  if (product.statusOffer && product.priceOriginal && product.priceOriginal > product.price) {
+    priceMarkup = `
+      <div style="display:flex; align-items:baseline; gap:0.75rem;">
+        <span class="modal-price" style="color:var(--accent-gold); font-weight:700;">${CONFIG.currency}${product.price.toLocaleString('es-AR')}</span>
+        <span style="font-size:1rem; text-decoration:line-through; color:var(--text-secondary);">${CONFIG.currency}${product.priceOriginal.toLocaleString('es-AR')}</span>
+      </div>
+    `;
+  }
+
   doc.modalBody.innerHTML = `
     <div class="modal-img-wrapper">
       <img src="${product.image}" alt="${product.name}" class="modal-img">
@@ -443,7 +520,7 @@ function openProductDetail(productId) {
       <span class="modal-scent">${product.familyLabel}</span>
       
       <div class="modal-price-row">
-        <span class="modal-price">${CONFIG.currency}${product.price.toLocaleString('es-AR')}</span>
+        ${priceMarkup}
         <span class="modal-size">Contenido: ${product.size}</span>
       </div>
       
@@ -487,8 +564,10 @@ function closeModal() {
 function adjustModalQty(amount) {
   const qtyEl = document.getElementById('modal-qty-value');
   if (!qtyEl) return;
+  const maxVal = parseInt(qtyEl.dataset.max) || 10;
   let currentVal = parseInt(qtyEl.textContent);
-  currentVal = Math.max(1, currentVal + amount);
+  currentVal = currentVal + amount;
+  currentVal = Math.max(1, Math.min(maxVal, currentVal));
   qtyEl.textContent = currentVal;
 }
 
@@ -527,13 +606,23 @@ function addToCart(productId, qty = 1) {
   const product = allProducts.find(p => p.id === productId);
   if (!product) return;
   
-  // Prevent adding unavailable items
-  if (product.statusSold || product.statusNoStock) {
+  const outOfStock = product.statusNoStock || (product.stockCount !== undefined && product.stockCount <= 0);
+
+  if (product.statusSold || outOfStock) {
     showToast('Este producto no está disponible por el momento.');
     return;
   }
-  
+
+  // Check existing quantities in cart against available stock limits
   const existingItem = cart.find(item => item.product.id === productId);
+  const currentQty = existingItem ? existingItem.quantity : 0;
+  const maxAvailable = product.stockCount !== undefined ? product.stockCount : 999;
+  
+  if (currentQty + qty > maxAvailable) {
+    showToast(`No puedes agregar más unidades. Límite de stock: ${maxAvailable} u.`);
+    return;
+  }
+  
   if (existingItem) {
     existingItem.quantity += qty;
   } else {
@@ -555,9 +644,18 @@ function removeFromCart(productId) {
 }
 
 function updateQty(productId, newQty) {
+  const allProducts = getStoredProducts();
+  const product = allProducts.find(p => p.id === productId);
+  const maxAvailable = (product && product.stockCount !== undefined) ? product.stockCount : 999;
+
   const item = cart.find(item => item.product.id === productId);
   if (item) {
-    item.quantity = Math.max(1, newQty);
+    if (newQty > maxAvailable) {
+      showToast(`Cantidad limitada a ${maxAvailable} u. por stock.`);
+      item.quantity = maxAvailable;
+    } else {
+      item.quantity = Math.max(1, newQty);
+    }
     saveCart();
     updateCartUI();
   }
@@ -750,12 +848,13 @@ function showQuizResults() {
     let badgesHtml = '';
     let isBtnDisabledClass = '';
     let btnText = 'Añadir';
-    
+    const outOfStock = bestMatch.statusNoStock || (bestMatch.stockCount !== undefined && bestMatch.stockCount <= 0);
+
     if (bestMatch.statusSold) {
       badgesHtml += `<span class="main-badge badge-sold">Vendido</span>`;
       isBtnDisabledClass = 'add-cart-btn-disabled';
       btnText = 'Vendido';
-    } else if (bestMatch.statusNoStock) {
+    } else if (outOfStock) {
       badgesHtml += `<span class="main-badge badge-nostock">Sin Stock</span>`;
       isBtnDisabledClass = 'add-cart-btn-disabled';
       btnText = 'Sin Stock';
@@ -802,11 +901,16 @@ function resetQuiz() {
 function openAdminPanel() {
   if (doc.adminModal) {
     doc.adminModal.classList.add('open');
-    renderAdminTable();
+    
+    // Always show password gate initially on opening
+    doc.adminAuthView.style.display = 'block';
+    doc.adminDashboardView.style.display = 'none';
+    doc.adminPasswordInput.value = '';
+    doc.adminAuthError.style.display = 'none';
+    isAdminAuthenticated = false;
   }
   if (doc.backdrop) doc.backdrop.classList.add('open');
   document.body.style.overflow = 'hidden';
-  showToast("Panel de Administrador Abierto");
 }
 
 function closeAdminPanel() {
@@ -818,8 +922,40 @@ function closeAdminPanel() {
   }
 }
 
+// Check if password entered is correct
+function checkAdminPassword() {
+  const pin = doc.adminPasswordInput.value.trim();
+  if (pin === '0803') {
+    doc.adminAuthError.style.display = 'none';
+    doc.adminAuthView.style.display = 'none';
+    doc.adminDashboardView.style.display = 'block';
+    isAdminAuthenticated = true;
+    renderAdminTable();
+    showToast("Acceso Autorizado");
+  } else {
+    doc.adminAuthError.style.display = 'block';
+    doc.adminPasswordInput.value = '';
+    doc.adminPasswordInput.focus();
+  }
+}
+
+// File uploader handler for local image files
+function handleLocalImageImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    uploadedImageDataUrl = event.target.result;
+    // Prefill the image URL text field with a placeholder so user knows it's imported
+    document.getElementById('form-image').value = '[Imagen Importada del Dispositivo]';
+    showToast('Imagen importada correctamente');
+  };
+  reader.readAsDataURL(file);
+}
+
 function renderAdminTable(filterQuery = '') {
-  if (!doc.adminTableBody) return;
+  if (!doc.adminTableBody || !isAdminAuthenticated) return;
   
   const allProducts = getStoredProducts();
   const query = filterQuery.toLowerCase().trim();
@@ -843,10 +979,27 @@ function renderAdminTable(filterQuery = '') {
   doc.adminTableBody.innerHTML = filtered.map(prod => {
     // Badges statuses
     let badges = [];
+    const outOfStock = prod.statusNoStock || (prod.stockCount !== undefined && prod.stockCount <= 0);
+
     if (prod.statusSold) badges.push('<span class="badge-admin sold">Vendido</span>');
-    if (prod.statusNoStock) badges.push('<span class="badge-admin nostock">Sin Stock</span>');
+    if (outOfStock) badges.push('<span class="badge-admin nostock">Sin Stock</span>');
     if (prod.statusOffer) badges.push('<span class="badge-admin offer">Oferta</span>');
     
+    // Quick "Republicar" button shows if item is sold or out of stock
+    let republicarBtn = '';
+    if (prod.statusSold || outOfStock) {
+      republicarBtn = `
+        <button class="btn-admin primary" onclick="republishProduct('${prod.id}')" title="Republicar (Restablecer Stock)" style="background-color:#2e8328; border-color:#2e8328; color:#fff;">
+          <i class="fas fa-redo"></i> Republicar
+        </button>
+      `;
+    }
+
+    const stock = prod.stockCount !== undefined ? `${prod.stockCount} u.` : '10 u.';
+    const displayPrice = prod.priceOriginal && prod.priceOriginal > prod.price 
+      ? `<span style="text-decoration:line-through; font-size:0.85em; color:var(--text-secondary); margin-right:4px;">$${prod.priceOriginal}</span><strong>$${prod.price}</strong>`
+      : `<strong>$${prod.price}</strong>`;
+
     return `
       <tr>
         <td>
@@ -859,16 +1012,17 @@ function renderAdminTable(filterQuery = '') {
           </div>
         </td>
         <td>${prod.categoryLabel}</td>
-        <td><strong>${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</strong></td>
+        <td>${displayPrice}</td>
         <td>${prod.size}</td>
-        <td>${prod.familyLabel}</td>
+        <td>${stock}</td>
         <td>
           <div class="admin-badges-cell">
-            ${badges.length > 0 ? badges.join('') : '<span style="color:var(--text-muted);font-style:italic;font-size:0.7rem;">Normal</span>'}
+            ${badges.length > 0 ? badges.join('') : '<span style="color:var(--text-muted);font-style:italic;font-size:0.7rem;">Activo</span>'}
           </div>
         </td>
         <td style="text-align: right;">
-          <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <div style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items:center;">
+            ${republicarBtn}
             <button class="btn-admin primary" onclick="editProduct('${prod.id}')" title="Editar"><i class="fas fa-edit"></i></button>
             <button class="btn-admin danger" onclick="deleteProduct('${prod.id}')" title="Eliminar"><i class="fas fa-trash"></i></button>
           </div>
@@ -878,14 +1032,17 @@ function renderAdminTable(filterQuery = '') {
   }).join('');
 }
 
-function toggleProductStatusField(productId, fieldName) {
+function republishProduct(productId) {
   const allProducts = getStoredProducts();
   const product = allProducts.find(p => p.id === productId);
   if (product) {
-    product[fieldName] = !product[fieldName];
+    product.statusSold = false;
+    product.statusNoStock = false;
+    product.stockCount = 10; // set standard default stock on republish
     saveStoredProducts(allProducts);
     renderAdminTable(doc.adminSearchInput.value);
-    filterCatalog(); // Update main shop view
+    filterCatalog(); // Update main view
+    showToast(`${product.name} republicado con éxito`);
   }
 }
 
@@ -894,17 +1051,21 @@ function editProduct(productId) {
   const product = allProducts.find(p => p.id === productId);
   if (!product) return;
   
-  // Open and pre-fill form
   doc.adminFormPanel.classList.add('active');
   doc.formActionTitle.textContent = "Editar Producto: " + product.name;
   
   document.getElementById('form-product-id').value = product.id;
   document.getElementById('form-name').value = product.name;
   document.getElementById('form-price').value = product.price;
+  document.getElementById('form-price-original').value = product.priceOriginal || '';
+  document.getElementById('form-stock-count').value = product.stockCount !== undefined ? product.stockCount : 10;
   document.getElementById('form-category').value = product.category;
   document.getElementById('form-family').value = product.family;
   document.getElementById('form-size').value = product.size;
-  document.getElementById('form-image').value = product.image;
+  document.getElementById('form-image').value = product.image.startsWith('data:') ? '[Imagen Importada del Dispositivo]' : product.image;
+  
+  // Save base64 string in state if it is a base64 image
+  uploadedImageDataUrl = product.image.startsWith('data:') ? product.image : '';
   
   document.getElementById('form-status-offer').checked = !!product.statusOffer;
   document.getElementById('form-status-nostock').checked = !!product.statusNoStock;
@@ -915,7 +1076,6 @@ function editProduct(productId) {
   document.getElementById('form-note-corazon').value = product.notes ? product.notes.corazon : '';
   document.getElementById('form-note-fondo').value = product.notes ? product.notes.fondo : '';
   
-  // Scroll form into view
   doc.adminFormPanel.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -935,12 +1095,15 @@ function saveProductForm(e) {
   e.preventDefault();
   
   const id = document.getElementById('form-product-id').value;
-  const name = document.getElementById('form-name').value.strip ? document.getElementById('form-name').value.strip() : document.getElementById('form-name').value.trim();
+  const name = document.getElementById('form-name').value.trim();
   const price = parseInt(document.getElementById('form-price').value);
+  const priceOriginalVal = document.getElementById('form-price-original').value;
+  const priceOriginal = priceOriginalVal ? parseInt(priceOriginalVal) : null;
+  const stockCount = parseInt(document.getElementById('form-stock-count').value);
   const category = document.getElementById('form-category').value;
   const family = document.getElementById('form-family').value;
   const size = document.getElementById('form-size').value;
-  let image = document.getElementById('form-image').value;
+  let imageText = document.getElementById('form-image').value;
   
   const statusOffer = document.getElementById('form-status-offer').checked;
   const statusNoStock = document.getElementById('form-status-nostock').checked;
@@ -951,15 +1114,21 @@ function saveProductForm(e) {
   const noteCorazon = document.getElementById('form-note-corazon').value || 'Notas aromáticas';
   const noteFondo = document.getElementById('form-note-fondo').value || 'Acordes duraderos';
   
-  // Set category label
   const categoriesDict = FILTER_DATA.categories;
   const categoryLabel = categoriesDict[category] || 'Otros';
   
-  // Set family label
   const familiesDict = FILTER_DATA.families;
   const familyLabel = familiesDict[family] || 'Fresco';
   
-  if (!image) {
+  // Check if image is URL or loaded local image file
+  let image = '';
+  if (uploadedImageDataUrl) {
+    image = uploadedImageDataUrl; // Use base64 string
+  } else {
+    image = imageText;
+  }
+  
+  if (!image || image === '[Imagen Importada del Dispositivo]') {
     if (category === 'perfumes') image = './assets/perfume_milano.png';
     else if (category === 'textiles') image = './assets/aromatizante_textil.png';
     else if (category === 'difusores') image = './assets/difusor_aromatico.png';
@@ -974,6 +1143,8 @@ function saveProductForm(e) {
     if (product) {
       product.name = name;
       product.price = price;
+      product.priceOriginal = priceOriginal;
+      product.stockCount = stockCount;
       product.category = category;
       product.categoryLabel = categoryLabel;
       product.family = family;
@@ -998,6 +1169,8 @@ function saveProductForm(e) {
       id: newId,
       name,
       price,
+      priceOriginal,
+      stockCount,
       category,
       categoryLabel,
       family,
@@ -1022,6 +1195,7 @@ function saveProductForm(e) {
   saveStoredProducts(allProducts);
   doc.adminProductForm.reset();
   doc.adminFormPanel.classList.remove('active');
+  uploadedImageDataUrl = '';
   
   renderAdminTable(doc.adminSearchInput.value);
   filterCatalog(); // Update main view
@@ -1033,12 +1207,16 @@ function resetToDefaultProducts() {
   localStorage.removeItem('fgoparfum_products');
   const defaults = getStoredProducts();
   renderProducts(defaults);
-  renderAdminTable();
+  
+  if (isAdminAuthenticated) {
+    renderAdminTable();
+  }
   showToast("Catálogo restablecido por defecto");
 }
 
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
+window.republishProduct = republishProduct;
 window.resetToDefaultProducts = resetToDefaultProducts;
 
 // ----------------------------------------------------------------
