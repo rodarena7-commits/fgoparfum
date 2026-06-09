@@ -125,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Register Service Worker for PWA
   registerServiceWorker();
+  
+  // Check standalone mode / iOS installation helper
+  checkStandaloneStatus();
 });
 
 // Event Listeners Registration
@@ -1250,13 +1253,48 @@ function registerServiceWorker() {
   }
 }
 
+// Standalone status checker
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+
+function checkStandaloneStatus() {
+  if (isStandalone) {
+    // Hide all install UI if already running inside the app
+    if (doc.pwaHeroBanner) doc.pwaHeroBanner.style.display = 'none';
+    if (doc.pwaBanner) doc.pwaBanner.style.display = 'none';
+    return;
+  }
+  
+  // Check if iOS and not standalone
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIOS) {
+    // Show PWA helper elements for iOS users
+    if (doc.pwaHeroBanner) {
+      doc.pwaHeroBanner.classList.add('show');
+    }
+    setTimeout(() => {
+      if (!sessionStorage.getItem('pwa-dismissed') && doc.pwaBanner) {
+        doc.pwaBanner.classList.add('show');
+        const descEl = doc.pwaBanner.querySelector('.pwa-banner-text-desc');
+        if (descEl) {
+          descEl.textContent = "Toca el botón compartir de Safari y selecciona 'Agregar a inicio'.";
+        }
+        const installBtn = document.getElementById('btn-pwa-install');
+        if (installBtn) {
+          installBtn.textContent = "Instrucciones";
+        }
+      }
+    }, 4000);
+  }
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   
+  if (isStandalone) return;
+  
   if (doc.pwaHeroBanner) {
-    doc.pwaHeroBanner.style.opacity = '1';
-    doc.pwaHeroBanner.style.pointerEvents = 'auto';
+    doc.pwaHeroBanner.classList.add('show');
   }
   
   setTimeout(() => {
@@ -1267,25 +1305,33 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 function triggerPWAInstall() {
-  if (!deferredPrompt) return;
-  
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then((choiceResult) => {
-    if (choiceResult.outcome === 'accepted') {
-      console.log('El usuario aceptó la instalación de la PWA.');
-      hidePWABanners();
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('El usuario aceptó la instalación de la PWA.');
+        hidePWABanners();
+      } else {
+        console.log('El usuario canceló la instalación de la PWA.');
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    // iOS or non-chromium browsers install guide
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      showToast("Toca el botón compartir de Safari y selecciona 'Agregar a inicio' 📲");
     } else {
-      console.log('El usuario canceló la instalación de la PWA.');
+      showToast("Abre el menú de tu navegador y selecciona 'Instalar aplicación' o 'Agregar a pantalla principal' 📲");
     }
-    deferredPrompt = null;
-  });
+  }
 }
 
 function hidePWABanners() {
   if (doc.pwaBanner) doc.pwaBanner.classList.remove('show');
   if (doc.pwaHeroBanner) {
-    doc.pwaHeroBanner.style.opacity = '0';
-    doc.pwaHeroBanner.style.pointerEvents = 'none';
+    doc.pwaHeroBanner.classList.remove('show');
+    doc.pwaHeroBanner.style.display = 'none'; // Keep hidden permanently
   }
 }
 

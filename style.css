@@ -366,7 +366,7 @@ header.scrolled .logo-img {
 /* Banner de PWA en Hero */
 .pwa-inline-banner {
   margin-top: 3rem;
-  display: inline-flex;
+  display: none; /* Hidden by default, shown only when PWA is installable */
   align-items: center;
   gap: 1rem;
   background: rgba(255, 255, 255, 0.03);
@@ -374,10 +374,13 @@ header.scrolled .logo-img {
   border: 1px solid rgba(255, 255, 255, 0.05);
   padding: 0.75rem 1.5rem;
   border-radius: 50px;
-  animation: fadeInUp 1.8s ease forwards;
-  opacity: 0;
   cursor: pointer;
   transition: var(--transition-smooth);
+}
+
+.pwa-inline-banner.show {
+  display: inline-flex;
+  animation: fadeInUp 1.8s ease forwards;
 }
 
 .pwa-inline-banner:hover {
