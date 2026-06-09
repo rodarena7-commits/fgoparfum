@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO & Social Meta Tags -->
+  <title>FGOParfum | Perfumes Premium & Fragancias del Hogar</title>
+  <meta name="description" content="Explora nuestra exclusiva boutique de perfumes Milano y aromatizantes Saphirus distribuidos por Sherú Aromas. Calidad premium con la sofisticación de la alta perfumería.">
+  <meta name="keywords" content="perfumes, saphirus, sheru aromas, fragancias, aromatizantes textiles, difusores premium, boutique, argentina">
+  
+  <!-- PWA Primary Settings -->
+  <meta name="theme-color" content="#090909">
+  <link rel="manifest" href="./manifest.json">
+  
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FGOParfum">
+  <link rel="apple-touch-icon" href="./logotipo.jpeg">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="./style.css">
+  
+  <!-- Font Awesome Icons (CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+
+  <!-- Backdrop for cart drawer and modals -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- Header & Navigation -->
+  <header id="main-header">
+    <div class="container nav-container">
+      <!-- Mobile Menu Button -->
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <!-- Logo (blends with black background) -->
+      <a href="#" class="logo-wrapper" id="logo-link">
+        <img src="./logotipo.jpeg" alt="FGOParfum Logo" class="logo-img">
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="nav-menu" id="nav-menu">
+        <a href="#" class="nav-link active" data-category="all">Boutique</a>
+        <a href="#coleccion" class="nav-link" data-category="perfumes">Perfumes Milano</a>
+        <a href="#coleccion" class="nav-link" data-category="textiles">Textiles</a>
+        <a href="#coleccion" class="nav-link" data-category="difusores">Difusores</a>
+        <a href="#quiz-finder" class="nav-link">Scent Finder</a>
+      </nav>
+
+      <!-- Actions (Cart & Search) -->
+      <div class="nav-actions">
+        <button class="action-btn" id="btn-open-cart" aria-label="Ver Bolsa de Compras">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="cart-count" id="cart-count" style="display: none;">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <span class="hero-subtitle">Sherú Aromas & Saphirus</span>
+        <h1 class="hero-title">
+          La Esencia de la Elegancia
+          <span>Descubre Tu Fragancia Ideal</span>
+        </h1>
+        <p class="hero-description">
+          Sumérgete en una experiencia olfativa premium. Perfumería fina y fragancias ambientales diseñadas para cautivar y transformar tus espacios más preciados.
+        </p>
+        <a href="#coleccion" class="hero-btn">Explorar Colección</a>
+        
+        <!-- Interactive PWA Inline Banner (visible when app can be installed) -->
+        <div>
+          <div class="pwa-inline-banner" id="pwa-hero-banner" style="opacity: 0; pointer-events: none;">
+            <i class="fas fa-cloud-download-alt pwa-inline-icon"></i>
+            <span class="pwa-inline-text">Lleva FGOParfum en tu Pantalla</span>
+            <button class="pwa-inline-btn" id="btn-pwa-hero-install">Descargar App</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Showcase Grid -->
+    <section class="categories-showcase">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Categorías</span>
+          <h2 class="section-title">Colecciones Exclusivas</h2>
+        </div>
+        
+        <div class="categories-grid">
+          <!-- Milano Card -->
+          <div class="category-card" onclick="document.querySelector('.filter-btn[data-category=\'perfumes\']').click(); document.getElementById('coleccion').scrollIntoView({behavior: 'smooth'});">
+            <div class="category-img-wrapper">
+              <img src="./assets/perfume_milano.png" alt="Perfumes Milano" class="category-img">
+            </div>
+            <div class="category-info">
+              <span class="category-card-subtitle">Línea Corporal</span>
+              <h3 class="category-card-title">Perfumes Milano</h3>
+              <span class="category-card-btn">Ver Fragancias</span>
+            </div>
+          </div>
+          
+          <!-- Textiles Card -->
+          <div class="category-card" onclick="document.querySelector('.filter-btn[data-category=\'textiles\']').click(); document.getElementById('coleccion').scrollIntoView({behavior: 'smooth'});">
+            <div class="category-img-wrapper">
+              <img src="./assets/aromatizante_textil.png" alt="Aromatizantes Textiles" class="category-img">
+            </div>
+            <div class="category-info">
+              <span class="category-card-subtitle">Aromas Textiles</span>
+              <h3 class="category-card-title">Aromatizantes Ropa</h3>
+              <span class="category-card-btn">Ver Fragancias</span>
+            </div>
+          </div>
+          
+          <!-- Diffusers Card -->
+          <div class="category-card" onclick="document.querySelector('.filter-btn[data-category=\'difusores\']').click(); document.getElementById('coleccion').scrollIntoView({behavior: 'smooth'});">
+            <div class="category-img-wrapper">
+              <img src="./assets/difusor_aromatico.png" alt="Difusores Premium" class="category-img">
+            </div>
+            <div class="category-info">
+              <span class="category-card-subtitle">Fragancias de Ambiente</span>
+              <h3 class="category-card-title">Difusores Premium</h3>
+              <span class="category-card-btn">Ver Fragancias</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Products Section & Catalog -->
+    <section class="products-section" id="coleccion">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Catálogo Completo</span>
+          <h2 class="section-title">Nuestras Fragancias</h2>
+        </div>
+        
+        <!-- Filter & Search Bar -->
+        <div class="filter-bar">
+          <!-- Category list filters -->
+          <div class="category-filters" id="category-filters">
+            <button class="filter-btn active" data-category="all">Todos los Productos</button>
+            <button class="filter-btn" data-category="perfumes">Perfumes Milano</button>
+            <button class="filter-btn" data-category="textiles">Textiles</button>
+            <button class="filter-btn" data-category="difusores">Difusores</button>
+          </div>
+          
+          <!-- Scent notes filter & search -->
+          <div class="search-filter-wrapper">
+            <select class="scent-family-select" id="scent-family-select" aria-label="Filtrar por Notas Olfativas">
+              <option value="all">Familias Olfativas (Todas)</option>
+              <option value="floral">Familia Floral</option>
+              <option value="dulce">Familia Dulce/Gourmet</option>
+              <option value="citrico">Familia Cítrica</option>
+              <option value="frutal">Familia Frutal</option>
+              <option value="amaderado">Familia Amaderada</option>
+              <option value="fresco">Familia Fresca/Herbal</option>
+            </select>
+            
+            <div class="search-input-container">
+              <input type="text" class="search-input" id="search-input" placeholder="Buscar fragancia...">
+              <i class="fas fa-search search-icon"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Dynamic Products Grid -->
+        <div class="products-grid" id="products-grid">
+          <!-- Dynamic rendering via app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Fragrance Finder Quiz Section -->
+    <section class="quiz-section" id="quiz-finder">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-subtitle">Scent Finder</span>
+          <h2 class="section-title">Encuentra tu Fragancia Ideal</h2>
+        </div>
+        
+        <!-- Quiz Container -->
+        <div class="quiz-container" id="quiz-container">
+          <div class="quiz-progress" id="quiz-progress-bar"></div>
+          
+          <!-- Step 1: Who is it for -->
+          <div class="quiz-step active" id="quiz-step-1">
+            <span class="quiz-step-indicator">Paso 1 de 3</span>
+            <h3 class="quiz-question">¿Para quién buscas la fragancia?</h3>
+            <div class="quiz-options" data-step="1">
+              <button class="quiz-option" data-value="femenino">
+                <i class="fas fa-venus" style="margin-bottom: 0.5rem; display: block; font-size: 1.2rem; color: var(--accent-gold);"></i>
+                Para Ella (Femenino)
+              </button>
+              <button class="quiz-option" data-value="masculino">
+                <i class="fas fa-mars" style="margin-bottom: 0.5rem; display: block; font-size: 1.2rem; color: var(--accent-gold);"></i>
+                Para Él (Masculino)
+              </button>
+              <button class="quiz-option" data-value="home" style="grid-column: 1 / -1;">
+                <i class="fas fa-home" style="margin-bottom: 0.5rem; display: block; font-size: 1.2rem; color: var(--accent-gold);"></i>
+                Para el Hogar y Ambientes
+              </button>
+            </div>
+          </div>
+          
+          <!-- Step 2: What vibe/mood -->
+          <div class="quiz-step" id="quiz-step-2">
+            <span class="quiz-step-indicator">Paso 2 de 3</span>
+            <h3 class="quiz-question">¿Qué sensación deseas transmitir o sentir?</h3>
+            <div class="quiz-options" data-step="2">
+              <button class="quiz-option" data-value="elegancia">Sofisticación, Poder y Presencia</button>
+              <button class="quiz-option" data-value="energia">Frescura Vivaz y Energía Activa</button>
+              <button class="quiz-option" data-value="relax" style="grid-column: 1 / -1;">Calma, Dulzura y Relax Confortante</button>
+            </div>
+          </div>
+          
+          <!-- Step 3: Favorite aroma family -->
+          <div class="quiz-step" id="quiz-step-3">
+            <span class="quiz-step-indicator">Paso 3 de 3</span>
+            <h3 class="quiz-question">¿Qué notas olfativas te atraen más?</h3>
+            <div class="quiz-options" data-step="3">
+              <button class="quiz-option" data-value="floral">Pétalos florales, Rosas y Jazmines</button>
+              <button class="quiz-option" data-value="dulce">Vainilla cálida, Caramelo y Notas dulces</button>
+              <button class="quiz-option" data-value="frutal">Frutas tropicales maduras y Cítricos frescos</button>
+              <button class="quiz-option" data-value="amaderado">Maderas nobles, Pino silvestre y Cedro</button>
+            </div>
+          </div>
+          
+          <!-- Step 4: Results -->
+          <div class="quiz-step quiz-results-wrapper" id="quiz-results">
+            <span class="quiz-step-indicator">Recomendación Personalizada</span>
+            <h3 class="quiz-results-title">Tu Perfume Ideal</h3>
+            <p class="quiz-results-description">Según tus respuestas, te sugerimos incorporar la siguiente fragancia a tu rutina:</p>
+            
+            <div id="recommended-container">
+              <!-- Suggestion product card gets dynamically injected here -->
+            </div>
+            
+            <button class="quiz-reset-btn" id="btn-quiz-reset">Realizar Test de Nuevo</button>
+          </div>
+          
+          <!-- Quiz Navigation -->
+          <div class="quiz-navigation" id="quiz-nav">
+            <button class="quiz-nav-btn" id="btn-quiz-prev" style="visibility: hidden;" disabled>Atrás</button>
+            <span style="font-size: 0.75rem; color: var(--text-muted); align-self: center;">FGOParfum Selector</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Slide-out Shopping Cart Drawer -->
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-header">
+      <h3 class="cart-title">Bolsa de Compras</h3>
+      <button class="close-cart" id="btn-close-cart" aria-label="Cerrar Bolsa">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <!-- Cart Items list -->
+    <div class="cart-items-container" id="cart-items-container">
+      <!-- Rendered dynamically -->
+    </div>
+    
+    <!-- Cart Summary and Checkout -->
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span class="cart-total-price" id="cart-total-price">$0</span>
+      </div>
+      <p style="font-size: 0.68rem; color: var(--text-secondary); text-align: center; margin-bottom: 1.5rem; line-height: 1.4;">
+        * Los costos de envío y las formas de pago se coordinarán directamente por WhatsApp.
+      </p>
+      <button class="whatsapp-checkout-btn" id="btn-checkout" disabled>
+        <i class="fab fa-whatsapp"></i> Realizar Pedido por WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div class="modal" id="product-modal">
+    <button class="close-modal" id="btn-close-modal" aria-label="Cerrar Detalles">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="modal-content" id="modal-content-body">
+      <!-- Injected dynamically via app.js -->
+    </div>
+  </div>
+
+  <!-- Toast Feedbacks -->
+  <div class="toast" id="toast">
+    <i class="fas fa-check-circle toast-icon"></i>
+    <span id="toast-message">Artículo agregado</span>
+  </div>
+
+  <!-- PWA Floating Bottom Installation Banner -->
+  <div class="pwa-install-banner" id="pwa-install-banner">
+    <div class="pwa-banner-logo-wrapper">
+      <img src="./logotipo.jpeg" alt="FGOParfum Logo" class="pwa-banner-logo">
+      <div>
+        <h4 class="pwa-banner-text-title">Instalar FGOParfum App</h4>
+        <p class="pwa-banner-text-desc">Agrégala a tu pantalla de inicio para navegar más rápido y sin conexión.</p>
+      </div>
+    </div>
+    <div class="pwa-banner-actions">
+      <button class="pwa-btn-close" id="btn-pwa-close">Ahora No</button>
+      <button class="pwa-btn-install" id="btn-pwa-install">Instalar</button>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Info Column -->
+        <div>
+          <img src="./logotipo.jpeg" alt="FGOParfum Footer Logo" class="footer-logo">
+          <p class="footer-col-desc">
+            Distribuidor autorizado de fragancias premium Saphirus y Milano Cosmetics. Llevamos aromas excepcionales a tu cuerpo y hogar con la dedicación de Sherú Aromas.
+          </p>
+        </div>
+        
+        <!-- Navigation Links Column -->
+        <div>
+          <h4 class="footer-title">Colecciones</h4>
+          <ul class="footer-links">
+            <li class="footer-link-item"><a href="#coleccion" onclick="document.querySelector('.filter-btn[data-category=\'all\']').click();">Boutique General</a></li>
+            <li class="footer-link-item"><a href="#coleccion" onclick="document.querySelector('.filter-btn[data-category=\'perfumes\']').click();">Perfumes Milano</a></li>
+            <li class="footer-link-item"><a href="#coleccion" onclick="document.querySelector('.filter-btn[data-category=\'textiles\']').click();">Aromatizantes Textiles</a></li>
+            <li class="footer-link-item"><a href="#coleccion" onclick="document.querySelector('.filter-btn[data-category=\'difusores\']').click();">Difusores Premium</a></li>
+          </ul>
+        </div>
+        
+        <!-- Info Links Column -->
+        <div>
+          <h4 class="footer-title">Experiencia</h4>
+          <ul class="footer-links">
+            <li class="footer-link-item"><a href="#quiz-finder">Scent Finder Test</a></li>
+            <li class="footer-link-item"><a href="#" onclick="if(deferredPrompt){triggerPWAInstall();}else{alert('La app ya está instalada o tu navegador no lo soporta directamente.');}">Instalar PWA App</a></li>
+            <li class="footer-link-item"><a href="https://sheru.com.ar/" target="_blank" rel="noopener">Sherú Aromas Oficial</a></li>
+          </ul>
+        </div>
+        
+        <!-- Contact Column -->
+        <div>
+          <h4 class="footer-title">Contacto</h4>
+          <div class="footer-contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Buenos Aires, Argentina</span>
+          </div>
+          <div class="footer-contact-item">
+            <i class="fab fa-whatsapp"></i>
+            <span><a href="https://wa.me/5491158338126" target="_blank">+54 9 11 5833-8126</a></span>
+          </div>
+          <div class="footer-contact-item">
+            <i class="far fa-envelope"></i>
+            <span><a href="mailto:sheruaromas@gmail.com">sheruaromas@gmail.com</a></span>
+          </div>
+          <div class="footer-socials">
+            <a href="https://instagram.com/" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://facebook.com/" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://wa.me/5491158338126" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer Bottom Copyright & Terms -->
+      <div class="footer-bottom">
+        <p>&copy; 2026 FGOParfum. Todos los derechos reservados. Distribuidor Saphirus.</p>
+        <div class="footer-bottom-links">
+          <a href="#" onclick="alert('Esta web es un catálogo de demostración comercial PWA para distribuidores.'); return false;">Políticas de Privacidad</a>
+          <a href="#" onclick="alert('Al realizar el pedido, se enviará un resumen de compra a WhatsApp para acordar pago y envío.'); return false;">Condiciones de Venta</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Import application scripts (products data first, then core logic) -->
+  <script src="./products.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
