@@ -279,7 +279,7 @@
     
     <!-- Cart Summary and Checkout -->
     <div class="cart-footer">
-      <div class="cart-total-row">
+      <div class="cart-total-row" style="display: none;">
         <span>Subtotal</span>
         <span class="cart-total-price" id="cart-total-price">$0</span>
       </div>
@@ -382,12 +382,12 @@
                 <input type="text" class="form-control" id="form-name" required placeholder="Ej. Milano One Million">
               </div>
               
-              <div class="form-group">
+              <div class="form-group" style="display: none;">
                 <label for="form-price">Precio Actual ($)</label>
-                <input type="number" class="form-control" id="form-price" required min="0" placeholder="Ej. 8000">
+                <input type="number" class="form-control" id="form-price" value="0" min="0" placeholder="Ej. 8000">
               </div>
 
-              <div class="form-group">
+              <div class="form-group" style="display: none;">
                 <label for="form-price-original">Precio Original / Anterior ($)</label>
                 <input type="number" class="form-control" id="form-price-original" min="0" placeholder="Ej. 9500 (Tachado)">
               </div>
@@ -484,7 +484,6 @@
               <tr>
                 <th>Producto</th>
                 <th>Categoría</th>
-                <th>Precio</th>
                 <th>Medida</th>
                 <th>Stock</th>
                 <th>Estados</th>
@@ -550,7 +549,6 @@
           <ul class="footer-links">
             <li class="footer-link-item"><a href="#quiz-finder">Scent Finder Test</a></li>
             <li class="footer-link-item"><a href="#" onclick="if(deferredPrompt){triggerPWAInstall();}else{alert('La app ya está instalada o tu navegador no lo soporta directamente.');}">Instalar PWA App</a></li>
-            <li class="footer-link-item"><a href="https://sheru.com.ar/" target="_blank" rel="noopener">Sherú Aromas Oficial</a></li>
           </ul>
         </div>
         
@@ -563,16 +561,16 @@
           </div>
           <div class="footer-contact-item">
             <i class="fab fa-whatsapp"></i>
-            <span><a href="https://wa.me/5491158338126" target="_blank">+54 9 11 5833-8126</a></span>
+            <span><a href="https://wa.me/5491135931975" target="_blank">+54 9 11 3593-1975</a></span>
           </div>
           <div class="footer-contact-item">
             <i class="far fa-envelope"></i>
-            <span><a href="mailto:sheruaromas@gmail.com">sheruaromas@gmail.com</a></span>
+            <span><a href="mailto:fgoparfum@gmaill.com">fgoparfum@gmaill.com</a></span>
           </div>
           <div class="footer-socials">
             <a href="https://instagram.com/" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
             <a href="https://facebook.com/" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://wa.me/5491158338126" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="https://wa.me/5491135931975" target="_blank" rel="noopener" class="social-icon" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
           </div>
         </div>
       </div>

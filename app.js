@@ -568,16 +568,7 @@ function renderProducts(productsList) {
       badgesHtml += `<span class="main-badge badge-offer">Oferta</span>`;
     }
     
-    // Render discount price if original price is configured and is greater than price
-    let priceHtml = `<span class="product-card-price">${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</span>`;
-    if (prod.priceOriginal && prod.priceOriginal > prod.price) {
-      priceHtml = `
-        <div style="display:flex; flex-direction:column; align-items:flex-start;">
-          <span style="font-size:0.75rem; text-decoration:line-through; color:var(--text-secondary); line-height:1;">${CONFIG.currency}${prod.priceOriginal.toLocaleString('es-AR')}</span>
-          <span class="product-card-price" style="color:var(--accent-gold); font-weight:700;">${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</span>
-        </div>
-      `;
-    }
+    let priceHtml = '';
 
     // Render stock warnings for low stock
     let stockWarningHtml = '';
@@ -683,16 +674,7 @@ function openProductDetail(productId) {
     `;
   }
   
-  // Set price markup for modal
-  let priceMarkup = `<span class="modal-price">${CONFIG.currency}${product.price.toLocaleString('es-AR')}</span>`;
-  if (product.priceOriginal && product.priceOriginal > product.price) {
-    priceMarkup = `
-      <div style="display:flex; align-items:baseline; gap:0.75rem;">
-        <span class="modal-price" style="color:var(--accent-gold); font-weight:700;">${CONFIG.currency}${product.price.toLocaleString('es-AR')}</span>
-        <span style="font-size:1rem; text-decoration:line-through; color:var(--text-secondary);">${CONFIG.currency}${product.priceOriginal.toLocaleString('es-AR')}</span>
-      </div>
-    `;
-  }
+  let priceMarkup = '';
 
   doc.modalBody.innerHTML = `
     <div class="modal-img-wrapper">
@@ -909,7 +891,6 @@ function updateCartUI() {
               <span class="qty-val">${item.quantity}</span>
               <button class="qty-btn" onclick="updateQty('${item.product.id}', ${item.quantity + 1})">+</button>
             </div>
-            <span class="cart-item-price">${CONFIG.currency}${itemTotal.toLocaleString('es-AR')}</span>
           </div>
         </div>
       </div>
@@ -927,18 +908,13 @@ function sendOrderToWhatsApp() {
   let message = `*Hola FGOParfum!* 🛍️\nQuisiera realizar el siguiente pedido a través de la web:\n\n`;
   message += `━━━━━━━━━━━━━━━━━━━━━\n`;
   
-  let total = 0;
   cart.forEach((item, index) => {
-    const itemSubtotal = item.product.price * item.quantity;
-    total += itemSubtotal;
     message += `*${index + 1}. ${item.product.name}*\n`;
     message += `   • Cantidad: ${item.quantity}\n`;
-    message += `   • Medida: ${item.product.size}\n`;
-    message += `   • Subtotal: ${CONFIG.currency}${itemSubtotal.toLocaleString('es-AR')}\n\n`;
+    message += `   • Medida: ${item.product.size}\n\n`;
   });
   
   message += `━━━━━━━━━━━━━━━━━━━━━\n`;
-  message += `*TOTAL DEL PEDIDO: ${CONFIG.currency}${total.toLocaleString('es-AR')}*\n\n`;
   message += `*Datos del Cliente a Coordinar:*\n`;
   message += `• Envío o retiro:\n`;
   message += `• Nombre y Apellido:\n`;
@@ -1049,15 +1025,7 @@ function showQuizResults() {
       badgesHtml += `<span class="main-badge badge-offer">Oferta</span>`;
     }
 
-    let recommendedPriceHtml = `<span class="product-card-price">${CONFIG.currency}${bestMatch.price.toLocaleString('es-AR')}</span>`;
-    if (bestMatch.priceOriginal && bestMatch.priceOriginal > bestMatch.price) {
-      recommendedPriceHtml = `
-        <div style="display:flex; flex-direction:column; align-items:flex-start;">
-          <span style="font-size:0.75rem; text-decoration:line-through; color:var(--text-secondary); line-height:1;">${CONFIG.currency}${bestMatch.priceOriginal.toLocaleString('es-AR')}</span>
-          <span class="product-card-price" style="color:var(--accent-gold); font-weight:700;">${CONFIG.currency}${bestMatch.price.toLocaleString('es-AR')}</span>
-        </div>
-      `;
-    }
+    let recommendedPriceHtml = '';
 
     doc.recommendedContainer.innerHTML = `
       <div class="product-card" style="margin: 0 auto; text-align: left; max-width: 300px;">
@@ -1199,9 +1167,6 @@ function renderAdminTable(filterQuery = '') {
     }
 
     const stock = prod.stockCount !== undefined ? `${prod.stockCount} u.` : '10 u.';
-    const displayPrice = prod.priceOriginal && prod.priceOriginal > prod.price 
-      ? `<span style="text-decoration:line-through; font-size:0.85em; color:var(--text-secondary); margin-right:4px;">$${prod.priceOriginal}</span><strong>$${prod.price}</strong>`
-      : `<strong>$${prod.price}</strong>`;
 
     return `
       <tr>
@@ -1215,7 +1180,6 @@ function renderAdminTable(filterQuery = '') {
           </div>
         </td>
         <td>${prod.categoryLabel}</td>
-        <td>${displayPrice}</td>
         <td>${prod.size}</td>
         <td>${stock}</td>
         <td>

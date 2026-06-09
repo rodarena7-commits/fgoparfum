@@ -244,7 +244,7 @@ def main():
     
     # 4. Save back to products.js
     config_section = """const CONFIG = {
-  whatsappNumber: '5491158338126', // Formatted for WhatsApp URL link (+54 9 11 5833-8126)
+  whatsappNumber: '5491135931975', // Formatted for WhatsApp URL link (+54 9 11 3593-1975)
   shopName: 'FGOParfum',
   providerName: 'Sherú Aromas',
   currency: '$',

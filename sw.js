@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fgoparfum-cache-v3'; // Incremented to v3 to clear previous cache versions
+const CACHE_NAME = 'fgoparfum-cache-v4'; // Incremented to v4 to clear previous cache versions
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
