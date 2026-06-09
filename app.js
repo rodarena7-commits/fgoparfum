@@ -12,6 +12,10 @@ let quizAnswers = {
   notes: ''
 };
 
+// Admin states
+let logoClicks = 0;
+let logoClickTimeout = null;
+
 // DOM Elements
 const doc = {
   header: document.getElementById('main-header'),
@@ -54,7 +58,39 @@ const doc = {
   
   toast: document.getElementById('toast'),
   toastMessage: document.getElementById('toast-message'),
+  
+  // Admin Elements
+  adminModal: document.getElementById('admin-modal'),
+  btnCloseAdmin: document.getElementById('btn-close-admin'),
+  btnAdminReset: document.getElementById('btn-admin-reset'),
+  btnAdminAddToggle: document.getElementById('btn-admin-add-toggle'),
+  adminSearchInput: document.getElementById('admin-search-input'),
+  adminFormPanel: document.getElementById('admin-form-panel'),
+  adminProductForm: document.getElementById('admin-product-form'),
+  adminTableBody: document.getElementById('admin-table-body'),
+  btnAdminFormCancel: document.getElementById('btn-admin-form-cancel'),
+  formActionTitle: document.getElementById('form-action-title'),
 };
+
+// ----------------------------------------------------------------
+// Helper: LocalStorage Products Wrapper
+// ----------------------------------------------------------------
+function getStoredProducts() {
+  const stored = localStorage.getItem('fgoparfum_products');
+  if (!stored) {
+    localStorage.setItem('fgoparfum_products', JSON.stringify(PRODUCTS));
+    return PRODUCTS;
+  }
+  try {
+    return JSON.parse(stored);
+  } catch (e) {
+    return PRODUCTS;
+  }
+}
+
+function saveStoredProducts(productsList) {
+  localStorage.setItem('fgoparfum_products', JSON.stringify(productsList));
+}
 
 // ----------------------------------------------------------------
 // 1. Initial Setup & Event Listeners
@@ -63,8 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load Cart from LocalStorage
   loadCart();
   
-  // Render Featured Products or All Products initially
-  renderProducts(PRODUCTS);
+  // Render Products
+  renderProducts(getStoredProducts());
   
   // Setup Event Listeners
   initEventListeners();
@@ -84,11 +120,30 @@ function initEventListeners() {
     }
   });
 
+  // Logo click counter: 7 clicks in 3 seconds triggers Admin Modal
+  const logoLink = document.getElementById('logo-link');
+  if (logoLink) {
+    logoLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      logoClicks++;
+      
+      if (logoClickTimeout) clearTimeout(logoClickTimeout);
+      
+      if (logoClicks >= 7) {
+        logoClicks = 0;
+        openAdminPanel();
+      } else {
+        logoClickTimeout = setTimeout(() => {
+          logoClicks = 0;
+        }, 3000);
+      }
+    });
+  }
+
   // Mobile Menu Toggle
   if (doc.menuToggle) {
     doc.menuToggle.addEventListener('click', () => {
       doc.navMenu.classList.toggle('open');
-      // Toggle Hamburger Icon lines animation
       const spans = doc.menuToggle.querySelectorAll('span');
       spans[0].style.transform = doc.navMenu.classList.contains('open') ? 'rotate(45deg) translate(5px, 5px)' : 'none';
       spans[1].style.opacity = doc.navMenu.classList.contains('open') ? '0' : '1';
@@ -103,11 +158,9 @@ function initEventListeners() {
       doc.navMenu.classList.remove('open');
       const targetCategory = link.dataset.category;
       
-      // Update active nav link
       doc.navLinks.forEach(l => l.classList.remove('active'));
       link.classList.add('active');
       
-      // Sync filter buttons in product section
       const filterBtns = doc.categoryFilters.querySelectorAll('.filter-btn');
       filterBtns.forEach(btn => {
         if (btn.dataset.category === targetCategory) {
@@ -117,10 +170,8 @@ function initEventListeners() {
         }
       });
       
-      // Filter catalog
       filterCatalog();
       
-      // Smooth scroll to catalog section if it exists
       const targetSection = document.getElementById('coleccion');
       if (targetSection) {
         targetSection.scrollIntoView({ behavior: 'smooth' });
@@ -136,7 +187,6 @@ function initEventListeners() {
         filterBtns.forEach(btn => btn.classList.remove('active'));
         e.target.classList.add('active');
         
-        // Sync Nav Links
         doc.navLinks.forEach(link => {
           if (link.dataset.category === e.target.dataset.category) {
             link.classList.add('active');
@@ -171,6 +221,7 @@ function initEventListeners() {
     doc.backdrop.addEventListener('click', () => {
       closeCartDrawer();
       closeModal();
+      closeAdminPanel();
     });
   }
 
@@ -186,7 +237,7 @@ function initEventListeners() {
 
   // Quiz Options Click
   document.querySelectorAll('.quiz-option').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', () => {
       const step = parseInt(btn.parentElement.dataset.step);
       const answerValue = btn.dataset.value;
       
@@ -229,6 +280,36 @@ function initEventListeners() {
   if (doc.btnPwaHeroInstall) {
     doc.btnPwaHeroInstall.addEventListener('click', triggerPWAInstall);
   }
+  
+  // Admin Panel Event Listeners
+  if (doc.btnCloseAdmin) {
+    doc.btnCloseAdmin.addEventListener('click', closeAdminPanel);
+  }
+  if (doc.btnAdminReset) {
+    doc.btnAdminReset.addEventListener('click', resetToDefaultProducts);
+  }
+  if (doc.btnAdminAddToggle) {
+    doc.btnAdminAddToggle.addEventListener('click', () => {
+      doc.adminFormPanel.classList.toggle('active');
+      doc.formActionTitle.textContent = "Añadir Nuevo Producto";
+      doc.adminProductForm.reset();
+      document.getElementById('form-product-id').value = '';
+    });
+  }
+  if (doc.btnAdminFormCancel) {
+    doc.btnAdminFormCancel.addEventListener('click', () => {
+      doc.adminFormPanel.classList.remove('active');
+      doc.adminProductForm.reset();
+    });
+  }
+  if (doc.adminSearchInput) {
+    doc.adminSearchInput.addEventListener('input', () => {
+      renderAdminTable(doc.adminSearchInput.value);
+    });
+  }
+  if (doc.adminProductForm) {
+    doc.adminProductForm.addEventListener('submit', saveProductForm);
+  }
 }
 
 // ----------------------------------------------------------------
@@ -248,16 +329,36 @@ function renderProducts(productsList) {
   }
   
   doc.productsGrid.innerHTML = productsList.map(prod => {
-    const isFeaturedBadge = prod.featured ? `<div class="product-badge">Destacado</div>` : '';
+    // Check product status badges
+    let badgesHtml = '';
+    let isCardDisabledClass = '';
+    let isBtnDisabledClass = '';
+    let btnText = 'Añadir';
+    
+    if (prod.statusSold) {
+      badgesHtml += `<span class="main-badge badge-sold">Vendido</span>`;
+      isCardDisabledClass = 'card-disabled';
+      isBtnDisabledClass = 'add-cart-btn-disabled';
+      btnText = 'Vendido';
+    } else if (prod.statusNoStock) {
+      badgesHtml += `<span class="main-badge badge-nostock">Sin Stock</span>`;
+      isCardDisabledClass = 'card-disabled';
+      isBtnDisabledClass = 'add-cart-btn-disabled';
+      btnText = 'Sin Stock';
+    }
+    
+    if (prod.statusOffer) {
+      badgesHtml += `<span class="main-badge badge-offer">Oferta</span>`;
+    }
     
     return `
-      <div class="product-card" data-id="${prod.id}">
-        ${isFeaturedBadge}
+      <div class="product-card ${isCardDisabledClass}" data-id="${prod.id}">
+        <div class="product-card-badges">${badgesHtml}</div>
         <div class="product-card-img-wrapper">
           <img src="${prod.image}" alt="${prod.name}" class="product-card-img" loading="lazy">
           <div class="product-overlay-actions">
             <button class="quick-view-btn" onclick="openProductDetail('${prod.id}')">Descubrir Scent</button>
-            <button class="add-cart-btn-icon" onclick="addToCart('${prod.id}', 1)" title="Añadir al Carrito">
+            <button class="add-cart-btn-icon ${isBtnDisabledClass}" ${isBtnDisabledClass ? 'disabled' : ''} onclick="addToCart('${prod.id}', 1)" title="${btnText}">
               <i class="fas fa-shopping-bag"></i>
             </button>
           </div>
@@ -282,14 +383,15 @@ function filterCatalog() {
   const selectedFamily = doc.scentSelect ? doc.scentSelect.value : 'all';
   const searchQuery = doc.searchInput ? doc.searchInput.value.toLowerCase().trim() : '';
   
-  const filtered = PRODUCTS.filter(prod => {
+  const allProducts = getStoredProducts();
+  const filtered = allProducts.filter(prod => {
     // Category match
     const categoryMatch = (selectedCategory === 'all' || prod.category === selectedCategory);
     
     // Family match
     const familyMatch = (selectedFamily === 'all' || prod.family === selectedFamily);
     
-    // Search query match (Matches title, category, description, family)
+    // Search query match
     const textSearch = prod.name.toLowerCase().includes(searchQuery) ||
                        prod.description.toLowerCase().includes(searchQuery) ||
                        prod.categoryLabel.toLowerCase().includes(searchQuery) ||
@@ -305,8 +407,31 @@ function filterCatalog() {
 // 3. Product Quick View Detail (Modal)
 // ----------------------------------------------------------------
 function openProductDetail(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
+  const allProducts = getStoredProducts();
+  const product = allProducts.find(p => p.id === productId);
   if (!product || !doc.modal || !doc.modalBody) return;
+  
+  let isBtnDisabled = '';
+  let btnMarkup = '';
+  
+  if (product.statusSold) {
+    isBtnDisabled = 'disabled style="background-color:#6c757d; cursor:not-allowed;"';
+    btnMarkup = `<button class="modal-add-btn" ${isBtnDisabled}><i class="fas fa-ban"></i> Producto Vendido</button>`;
+  } else if (product.statusNoStock) {
+    isBtnDisabled = 'disabled style="background-color:#6c757d; cursor:not-allowed;"';
+    btnMarkup = `<button class="modal-add-btn" ${isBtnDisabled}><i class="fas fa-ban"></i> Sin Stock</button>`;
+  } else {
+    btnMarkup = `
+      <div class="modal-qty">
+        <button class="modal-qty-btn" onclick="adjustModalQty(-1)">-</button>
+        <span class="modal-qty-val" id="modal-qty-value">1</span>
+        <button class="modal-qty-btn" onclick="adjustModalQty(1)">+</button>
+      </div>
+      <button class="modal-add-btn" onclick="addFromModal('${product.id}')">
+        <i class="fas fa-shopping-bag"></i> Agregar al Carrito
+      </button>
+    `;
+  }
   
   doc.modalBody.innerHTML = `
     <div class="modal-img-wrapper">
@@ -341,34 +466,29 @@ function openProductDetail(productId) {
       </div>
       
       <div class="modal-actions">
-        <div class="modal-qty">
-          <button class="modal-qty-btn" onclick="adjustModalQty(-1)">-</button>
-          <span class="modal-qty-val" id="modal-qty-value">1</span>
-          <button class="modal-qty-btn" onclick="adjustModalQty(1)">+</button>
-        </div>
-        <button class="modal-add-btn" onclick="addFromModal('${product.id}')">
-          <i class="fas fa-shopping-bag"></i> Agregar al Carrito
-        </button>
+        ${btnMarkup}
       </div>
     </div>
   `;
   
   doc.backdrop.classList.add('open');
   doc.modal.classList.add('open');
-  document.body.style.overflow = 'hidden'; // Disable page scrolling
+  document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
   if (doc.modal) doc.modal.classList.remove('open');
-  if (doc.backdrop) doc.backdrop.classList.remove('open');
-  document.body.style.overflow = ''; // Re-enable page scrolling
+  if (doc.backdrop && (!doc.adminModal || !doc.adminModal.classList.contains('open')) && (!doc.cartDrawer || !doc.cartDrawer.classList.contains('open'))) {
+    doc.backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
 }
 
 function adjustModalQty(amount) {
   const qtyEl = document.getElementById('modal-qty-value');
   if (!qtyEl) return;
   let currentVal = parseInt(qtyEl.textContent);
-  currentVal = Math.max(1, currentVal + amount); // Minimum is 1
+  currentVal = Math.max(1, currentVal + amount);
   qtyEl.textContent = currentVal;
 }
 
@@ -379,7 +499,6 @@ function addFromModal(productId) {
   closeModal();
 }
 
-// Global functions exposed to window for onclick attributes
 window.openProductDetail = openProductDetail;
 window.adjustModalQty = adjustModalQty;
 window.addFromModal = addFromModal;
@@ -404,8 +523,15 @@ function saveCart() {
 }
 
 function addToCart(productId, qty = 1) {
-  const product = PRODUCTS.find(p => p.id === productId);
+  const allProducts = getStoredProducts();
+  const product = allProducts.find(p => p.id === productId);
   if (!product) return;
+  
+  // Prevent adding unavailable items
+  if (product.statusSold || product.statusNoStock) {
+    showToast('Este producto no está disponible por el momento.');
+    return;
+  }
   
   const existingItem = cart.find(item => item.product.id === productId);
   if (existingItem) {
@@ -445,15 +571,13 @@ function openCartDrawer() {
 
 function closeCartDrawer() {
   if (doc.cartDrawer) doc.cartDrawer.classList.remove('open');
-  // Only close backdrop if modal is also not open
-  if (doc.backdrop && (!doc.modal || !doc.modal.classList.contains('open'))) {
+  if (doc.backdrop && (!doc.modal || !doc.modal.classList.contains('open')) && (!doc.adminModal || !doc.adminModal.classList.contains('open'))) {
     doc.backdrop.classList.remove('open');
     document.body.style.overflow = '';
   }
 }
 
 function updateCartUI() {
-  // Update badge counts
   const totalItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
   if (doc.cartCount) {
     doc.cartCount.textContent = totalItemsCount;
@@ -515,7 +639,6 @@ function updateCartUI() {
   }
 }
 
-// WhatsApp Checkout Sender
 function sendOrderToWhatsApp() {
   if (cart.length === 0) return;
   
@@ -546,7 +669,6 @@ function sendOrderToWhatsApp() {
   window.open(whatsappUrl, '_blank');
 }
 
-// Global functions exposed to window for cart UI elements
 window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.updateQty = updateQty;
@@ -557,11 +679,9 @@ window.updateQty = updateQty;
 function goToQuizStep(stepNum) {
   currentQuizStep = stepNum;
   
-  // Update progress bar
   const progressPercent = ((stepNum - 1) / 3) * 100;
   if (doc.quizProgress) doc.quizProgress.style.width = `${progressPercent}%`;
   
-  // Show active step, hide others
   const steps = [doc.quizStep1, doc.quizStep2, doc.quizStep3, doc.quizResults];
   steps.forEach((step, idx) => {
     if (step) {
@@ -573,7 +693,6 @@ function goToQuizStep(stepNum) {
     }
   });
   
-  // Manage navigation button visibility
   if (doc.btnQuizPrev) {
     if (stepNum > 1 && stepNum <= 3) {
       doc.btnQuizPrev.disabled = false;
@@ -589,35 +708,29 @@ function showQuizResults() {
   goToQuizStep(4);
   if (doc.quizProgress) doc.quizProgress.style.width = `100%`;
   
-  // Logic to match answers with products
-  // Recipient: masculine, feminine, home
-  // Vibe: elegance (perfumes), energy (fresh/citrus), relax (sweet/floral)
-  // Notes: dulce, floral, frutal, amaderado
+  const allProducts = getStoredProducts();
+  let filteredRecs = allProducts;
   
-  let filteredRecs = PRODUCTS;
-  
-  // Filter by recipient type
   if (quizAnswers.recipient === 'masculino') {
-    filteredRecs = PRODUCTS.filter(p => p.category === 'perfumes' && (p.id.includes('1million') || p.id.includes('blue') || p.id.includes('invictos')));
+    filteredRecs = allProducts.filter(p => p.category === 'perfumes' && (p.id.includes('1million') || p.id.includes('blue') || p.id.includes('invictos')));
   } else if (quizAnswers.recipient === 'femenino') {
-    filteredRecs = PRODUCTS.filter(p => p.category === 'perfumes' && (p.id.includes('lavida') || p.id.includes('aura')));
+    filteredRecs = allProducts.filter(p => p.category === 'perfumes' && (p.id.includes('lavida') || p.id.includes('aura')));
   } else if (quizAnswers.recipient === 'home') {
-    filteredRecs = PRODUCTS.filter(p => p.category === 'textiles' || p.category === 'difusores');
+    filteredRecs = allProducts.filter(p => p.category === 'textiles' || p.category === 'difusores' || p.category === 'aerosoles');
   }
   
-  // Further filter or score based on vibe/notes preference
-  let bestMatch = filteredRecs[0]; // fallback
+  if (filteredRecs.length === 0) filteredRecs = allProducts;
+  
+  let bestMatch = filteredRecs[0];
   let maxScore = -1;
   
   filteredRecs.forEach(prod => {
     let score = 0;
     
-    // Scent family matching notes answer
     if (prod.family === quizAnswers.notes) {
       score += 10;
     }
     
-    // Scent vibe matching
     if (quizAnswers.vibe === 'elegancia') {
       if (prod.category === 'perfumes') score += 5;
       if (prod.family === 'amaderado' || prod.family === 'floral') score += 3;
@@ -633,15 +746,33 @@ function showQuizResults() {
     }
   });
   
-  // Render Recommended Product Card
   if (doc.recommendedContainer && bestMatch) {
+    let badgesHtml = '';
+    let isBtnDisabledClass = '';
+    let btnText = 'Añadir';
+    
+    if (bestMatch.statusSold) {
+      badgesHtml += `<span class="main-badge badge-sold">Vendido</span>`;
+      isBtnDisabledClass = 'add-cart-btn-disabled';
+      btnText = 'Vendido';
+    } else if (bestMatch.statusNoStock) {
+      badgesHtml += `<span class="main-badge badge-nostock">Sin Stock</span>`;
+      isBtnDisabledClass = 'add-cart-btn-disabled';
+      btnText = 'Sin Stock';
+    }
+    
+    if (bestMatch.statusOffer) {
+      badgesHtml += `<span class="main-badge badge-offer">Oferta</span>`;
+    }
+
     doc.recommendedContainer.innerHTML = `
       <div class="product-card" style="margin: 0 auto; text-align: left; max-width: 300px;">
+        <div class="product-card-badges">${badgesHtml}</div>
         <div class="product-card-img-wrapper">
           <img src="${bestMatch.image}" alt="${bestMatch.name}" class="product-card-img">
           <div class="product-overlay-actions">
             <button class="quick-view-btn" onclick="openProductDetail('${bestMatch.id}')">Ver Detalles</button>
-            <button class="add-cart-btn-icon" onclick="addToCart('${bestMatch.id}', 1)">
+            <button class="add-cart-btn-icon ${isBtnDisabledClass}" ${isBtnDisabledClass ? 'disabled' : ''} onclick="addToCart('${bestMatch.id}', 1)" title="${btnText}">
               <i class="fas fa-shopping-bag"></i>
             </button>
           </div>
@@ -666,7 +797,252 @@ function resetQuiz() {
 }
 
 // ----------------------------------------------------------------
-// 6. PWA Installation Lógica
+// 6. Admin Panel Lógica
+// ----------------------------------------------------------------
+function openAdminPanel() {
+  if (doc.adminModal) {
+    doc.adminModal.classList.add('open');
+    renderAdminTable();
+  }
+  if (doc.backdrop) doc.backdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  showToast("Panel de Administrador Abierto");
+}
+
+function closeAdminPanel() {
+  if (doc.adminModal) doc.adminModal.classList.remove('open');
+  if (doc.adminFormPanel) doc.adminFormPanel.classList.remove('active');
+  if (doc.backdrop && (!doc.modal || !doc.modal.classList.contains('open')) && (!doc.cartDrawer || !doc.cartDrawer.classList.contains('open'))) {
+    doc.backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+function renderAdminTable(filterQuery = '') {
+  if (!doc.adminTableBody) return;
+  
+  const allProducts = getStoredProducts();
+  const query = filterQuery.toLowerCase().trim();
+  
+  const filtered = allProducts.filter(p => 
+    p.name.toLowerCase().includes(query) || 
+    p.categoryLabel.toLowerCase().includes(query)
+  );
+  
+  if (filtered.length === 0) {
+    doc.adminTableBody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          No se encontraron productos en la lista.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  doc.adminTableBody.innerHTML = filtered.map(prod => {
+    // Badges statuses
+    let badges = [];
+    if (prod.statusSold) badges.push('<span class="badge-admin sold">Vendido</span>');
+    if (prod.statusNoStock) badges.push('<span class="badge-admin nostock">Sin Stock</span>');
+    if (prod.statusOffer) badges.push('<span class="badge-admin offer">Oferta</span>');
+    
+    return `
+      <tr>
+        <td>
+          <div class="admin-prod-cell">
+            <img src="${prod.image}" alt="" class="admin-prod-img">
+            <div>
+              <div class="admin-prod-name">${prod.name}</div>
+              <div style="font-size: 0.65rem; color: var(--text-muted);">ID: ${prod.id}</div>
+            </div>
+          </div>
+        </td>
+        <td>${prod.categoryLabel}</td>
+        <td><strong>${CONFIG.currency}${prod.price.toLocaleString('es-AR')}</strong></td>
+        <td>${prod.size}</td>
+        <td>${prod.familyLabel}</td>
+        <td>
+          <div class="admin-badges-cell">
+            ${badges.length > 0 ? badges.join('') : '<span style="color:var(--text-muted);font-style:italic;font-size:0.7rem;">Normal</span>'}
+          </div>
+        </td>
+        <td style="text-align: right;">
+          <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button class="btn-admin primary" onclick="editProduct('${prod.id}')" title="Editar"><i class="fas fa-edit"></i></button>
+            <button class="btn-admin danger" onclick="deleteProduct('${prod.id}')" title="Eliminar"><i class="fas fa-trash"></i></button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function toggleProductStatusField(productId, fieldName) {
+  const allProducts = getStoredProducts();
+  const product = allProducts.find(p => p.id === productId);
+  if (product) {
+    product[fieldName] = !product[fieldName];
+    saveStoredProducts(allProducts);
+    renderAdminTable(doc.adminSearchInput.value);
+    filterCatalog(); // Update main shop view
+  }
+}
+
+function editProduct(productId) {
+  const allProducts = getStoredProducts();
+  const product = allProducts.find(p => p.id === productId);
+  if (!product) return;
+  
+  // Open and pre-fill form
+  doc.adminFormPanel.classList.add('active');
+  doc.formActionTitle.textContent = "Editar Producto: " + product.name;
+  
+  document.getElementById('form-product-id').value = product.id;
+  document.getElementById('form-name').value = product.name;
+  document.getElementById('form-price').value = product.price;
+  document.getElementById('form-category').value = product.category;
+  document.getElementById('form-family').value = product.family;
+  document.getElementById('form-size').value = product.size;
+  document.getElementById('form-image').value = product.image;
+  
+  document.getElementById('form-status-offer').checked = !!product.statusOffer;
+  document.getElementById('form-status-nostock').checked = !!product.statusNoStock;
+  document.getElementById('form-status-sold').checked = !!product.statusSold;
+  
+  document.getElementById('form-description').value = product.description || '';
+  document.getElementById('form-note-salida').value = product.notes ? product.notes.salida : '';
+  document.getElementById('form-note-corazon').value = product.notes ? product.notes.corazon : '';
+  document.getElementById('form-note-fondo').value = product.notes ? product.notes.fondo : '';
+  
+  // Scroll form into view
+  doc.adminFormPanel.scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteProduct(productId) {
+  if (!confirm("¿Estás seguro de que deseas eliminar permanentemente este producto del catálogo?")) return;
+  
+  let allProducts = getStoredProducts();
+  allProducts = allProducts.filter(p => p.id !== productId);
+  
+  saveStoredProducts(allProducts);
+  renderAdminTable(doc.adminSearchInput.value);
+  filterCatalog(); // Update main view
+  showToast("Producto eliminado");
+}
+
+function saveProductForm(e) {
+  e.preventDefault();
+  
+  const id = document.getElementById('form-product-id').value;
+  const name = document.getElementById('form-name').value.strip ? document.getElementById('form-name').value.strip() : document.getElementById('form-name').value.trim();
+  const price = parseInt(document.getElementById('form-price').value);
+  const category = document.getElementById('form-category').value;
+  const family = document.getElementById('form-family').value;
+  const size = document.getElementById('form-size').value;
+  let image = document.getElementById('form-image').value;
+  
+  const statusOffer = document.getElementById('form-status-offer').checked;
+  const statusNoStock = document.getElementById('form-status-nostock').checked;
+  const statusSold = document.getElementById('form-status-sold').checked;
+  
+  const description = document.getElementById('form-description').value || `Fragancia premium de la línea ${category}.`;
+  const noteSalida = document.getElementById('form-note-salida').value || 'Notas frescas';
+  const noteCorazon = document.getElementById('form-note-corazon').value || 'Notas aromáticas';
+  const noteFondo = document.getElementById('form-note-fondo').value || 'Acordes duraderos';
+  
+  // Set category label
+  const categoriesDict = FILTER_DATA.categories;
+  const categoryLabel = categoriesDict[category] || 'Otros';
+  
+  // Set family label
+  const familiesDict = FILTER_DATA.families;
+  const familyLabel = familiesDict[family] || 'Fresco';
+  
+  if (!image) {
+    if (category === 'perfumes') image = './assets/perfume_milano.png';
+    else if (category === 'textiles') image = './assets/aromatizante_textil.png';
+    else if (category === 'difusores') image = './assets/difusor_aromatico.png';
+    else image = './assets/perfume_milano.png';
+  }
+  
+  const allProducts = getStoredProducts();
+  
+  if (id) {
+    // Edit existing product
+    const product = allProducts.find(p => p.id === id);
+    if (product) {
+      product.name = name;
+      product.price = price;
+      product.category = category;
+      product.categoryLabel = categoryLabel;
+      product.family = family;
+      product.familyLabel = familyLabel;
+      product.size = size;
+      product.image = image;
+      product.description = description;
+      product.statusOffer = statusOffer;
+      product.statusNoStock = statusNoStock;
+      product.statusSold = statusSold;
+      product.notes = {
+        salida: noteSalida,
+        corazon: noteCorazon,
+        fondo: noteFondo
+      };
+      showToast("Producto actualizado con éxito");
+    }
+  } else {
+    // Add new product
+    const newId = 'custom-' + Date.now();
+    const newProduct = {
+      id: newId,
+      name,
+      price,
+      category,
+      categoryLabel,
+      family,
+      familyLabel,
+      size,
+      image,
+      description,
+      featured: false,
+      statusOffer,
+      statusNoStock,
+      statusSold,
+      notes: {
+        salida: noteSalida,
+        corazon: noteCorazon,
+        fondo: noteFondo
+      }
+    };
+    allProducts.unshift(newProduct);
+    showToast("Producto agregado con éxito");
+  }
+  
+  saveStoredProducts(allProducts);
+  doc.adminProductForm.reset();
+  doc.adminFormPanel.classList.remove('active');
+  
+  renderAdminTable(doc.adminSearchInput.value);
+  filterCatalog(); // Update main view
+}
+
+function resetToDefaultProducts() {
+  if (!confirm("¿Estás seguro de que deseas restablecer el catálogo de productos al original? Esto eliminará todos los cambios de precios, productos añadidos y estados.")) return;
+  
+  localStorage.removeItem('fgoparfum_products');
+  const defaults = getStoredProducts();
+  renderProducts(defaults);
+  renderAdminTable();
+  showToast("Catálogo restablecido por defecto");
+}
+
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
+window.resetToDefaultProducts = resetToDefaultProducts;
+
+// ----------------------------------------------------------------
+// 7. PWA Installation Lógica
 // ----------------------------------------------------------------
 function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
@@ -682,23 +1058,16 @@ function registerServiceWorker() {
   }
 }
 
-// Listen for the PWA install prompt event
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
   e.preventDefault();
-  
-  // Stash the event so it can be triggered later
   deferredPrompt = e;
   
-  // Show the inline PWA banner on the Hero section
   if (doc.pwaHeroBanner) {
     doc.pwaHeroBanner.style.opacity = '1';
     doc.pwaHeroBanner.style.pointerEvents = 'auto';
   }
   
-  // Show the bottom sticky install banner after a 5 second delay
   setTimeout(() => {
-    // Check if the user has dismissed this banner in this session
     if (!sessionStorage.getItem('pwa-dismissed') && doc.pwaBanner) {
       doc.pwaBanner.classList.add('show');
     }
@@ -708,10 +1077,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 function triggerPWAInstall() {
   if (!deferredPrompt) return;
   
-  // Show the install prompt
   deferredPrompt.prompt();
-  
-  // Wait for the user to respond to the prompt
   deferredPrompt.userChoice.then((choiceResult) => {
     if (choiceResult.outcome === 'accepted') {
       console.log('El usuario aceptó la instalación de la PWA.');
@@ -719,7 +1085,6 @@ function triggerPWAInstall() {
     } else {
       console.log('El usuario canceló la instalación de la PWA.');
     }
-    // Clear the stashed prompt
     deferredPrompt = null;
   });
 }
@@ -732,14 +1097,12 @@ function hidePWABanners() {
   }
 }
 
-// Listen for successfully installed event
 window.addEventListener('appinstalled', (evt) => {
   console.log('La aplicación fue instalada con éxito en el sistema.');
   hidePWABanners();
   showToast('¡FGOParfum instalada con éxito en tu dispositivo!');
 });
 
-// Toast notification helper
 function showToast(message) {
   if (!doc.toast || !doc.toastMessage) return;
   

@@ -154,6 +154,9 @@
             <button class="filter-btn" data-category="perfumes">Perfumes Milano</button>
             <button class="filter-btn" data-category="textiles">Textiles</button>
             <button class="filter-btn" data-category="difusores">Difusores</button>
+            <button class="filter-btn" data-category="aerosoles">Aerosoles</button>
+            <button class="filter-btn" data-category="sahumerios">Sahumerios</button>
+            <button class="filter-btn" data-category="otros">Otros</button>
           </div>
           
           <!-- Scent notes filter & search -->
@@ -296,6 +299,147 @@
     </button>
     <div class="modal-content" id="modal-content-body">
       <!-- Injected dynamically via app.js -->
+    </div>
+  </div>
+
+  <!-- Admin Panel Modal -->
+  <div class="modal modal-admin" id="admin-modal">
+    <button class="close-modal" id="btn-close-admin" aria-label="Cerrar Admin">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="modal-content" style="display: block; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-info" style="width: 100%; max-width: 100%; padding: 2.5rem; display: block;">
+        <div class="admin-header">
+          <div class="admin-title-row">
+            <h2 class="modal-title" style="margin-bottom: 0;">Panel de Control</h2>
+            <span class="admin-subtitle-badge">Administrador</span>
+          </div>
+          <button class="btn-admin secondary" id="btn-admin-reset">Restablecer Catálogo</button>
+        </div>
+        
+        <!-- Actions & Search inside Admin -->
+        <div class="admin-actions-bar">
+          <button class="btn-admin primary" id="btn-admin-add-toggle">
+            <i class="fas fa-plus"></i> Añadir Producto
+          </button>
+          <div class="search-input-container" style="max-width: 300px; flex-grow: 1;">
+            <input type="text" class="search-input" id="admin-search-input" placeholder="Filtrar productos de la lista...">
+            <i class="fas fa-search search-icon"></i>
+          </div>
+        </div>
+        
+        <!-- Add / Edit Form Panel -->
+        <div class="admin-form-panel" id="admin-form-panel">
+          <h3 style="font-family: var(--font-serif); margin-bottom: 1.5rem; color: var(--accent-gold);" id="form-action-title">Añadir Nuevo Producto</h3>
+          <form id="admin-product-form">
+            <input type="hidden" id="form-product-id">
+            
+            <div class="admin-form-grid">
+              <div class="form-group half-width">
+                <label for="form-name">Nombre del Producto</label>
+                <input type="text" class="form-control" id="form-name" required placeholder="Ej. Milano One Million">
+              </div>
+              
+              <div class="form-group">
+                <label for="form-price">Precio ($)</label>
+                <input type="number" class="form-control" id="form-price" required min="0" placeholder="Ej. 9500">
+              </div>
+              
+              <div class="form-group">
+                <label for="form-category">Categoría</label>
+                <select class="form-control" id="form-category" required>
+                  <option value="perfumes">Perfumes Milano</option>
+                  <option value="textiles">Aromatizantes Textiles</option>
+                  <option value="difusores">Difusores Premium</option>
+                  <option value="aerosoles">Aerosoles Saphirus</option>
+                  <option value="sahumerios">Sahumerios</option>
+                  <option value="aceites">Aceites Hornillo</option>
+                  <option value="otros">Otros</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="form-family">Familia Olfativa</label>
+                <select class="form-control" id="form-family" required>
+                  <option value="floral">Floral</option>
+                  <option value="dulce">Dulce/Gourmet</option>
+                  <option value="citrico">Cítrico</option>
+                  <option value="frutal">Frutal</option>
+                  <option value="amaderado">Amaderado</option>
+                  <option value="fresco">Fresco/Herbal</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="form-size">Tamaño / Medida</label>
+                <input type="text" class="form-control" id="form-size" required placeholder="Ej. 100ml o 250ml">
+              </div>
+              
+              <div class="form-group half-width">
+                <label for="form-image">URL de la Imagen</label>
+                <input type="text" class="form-control" id="form-image" placeholder="Ej. ./assets/perfume_milano.png">
+              </div>
+              
+              <div class="form-checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="form-status-offer"> En Oferta
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="form-status-nostock"> Sin Stock
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="form-status-sold"> Vendido
+                </label>
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="form-description">Descripción Comercial</label>
+                <input type="text" class="form-control" id="form-description" placeholder="Escribe una breve descripción elegante del aroma...">
+              </div>
+              
+              <div class="form-group">
+                <label for="form-note-salida">Nota de Salida</label>
+                <input type="text" class="form-control" id="form-note-salida" placeholder="Ej. Mandarina, limón, menta">
+              </div>
+              
+              <div class="form-group">
+                <label for="form-note-corazon">Nota de Corazón</label>
+                <input type="text" class="form-control" id="form-note-corazon" placeholder="Ej. Canela, jazmín, rosa">
+              </div>
+              
+              <div class="form-group">
+                <label for="form-note-fondo">Nota de Fondo</label>
+                <input type="text" class="form-control" id="form-note-fondo" placeholder="Ej. Cuero, sándalo, ámbar">
+              </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-bottom: 2rem;">
+              <button type="button" class="btn-admin secondary" id="btn-admin-form-cancel">Cancelar</button>
+              <button type="submit" class="btn-admin primary" id="btn-admin-form-submit">Guardar Producto</button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Products list table -->
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Medida</th>
+                <th>Familia</th>
+                <th>Estados</th>
+                <th style="text-align: right;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-body">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
 

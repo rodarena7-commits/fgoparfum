@@ -1701,3 +1701,330 @@ footer {
     justify-content: center;
   }
 }
+
+/* ----------------------------------------------------------------
+   Admin Panel Styles
+   ---------------------------------------------------------------- */
+.modal-admin {
+  max-width: 1000px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-subtitle-badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  background-color: var(--accent-gold);
+  color: var(--bg-primary);
+  padding: 0.25rem 0.6rem;
+  font-weight: 700;
+}
+
+.admin-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+  max-height: 50vh;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-primary);
+  margin-bottom: 2rem;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.admin-table th {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.admin-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+  color: var(--text-secondary);
+}
+
+.admin-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.admin-prod-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-prod-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.admin-prod-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.admin-badges-cell {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.badge-admin {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+}
+
+.badge-admin.sold {
+  background-color: rgba(220, 53, 69, 0.15);
+  color: #ff4d4d;
+  border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.badge-admin.nostock {
+  background-color: rgba(108, 117, 125, 0.15);
+  color: #a1a1a6;
+  border: 1px solid rgba(108, 117, 125, 0.3);
+}
+
+.badge-admin.offer {
+  background-color: rgba(212, 175, 55, 0.15);
+  color: var(--accent-gold);
+  border: 1px solid var(--border-gold);
+}
+
+.btn-admin {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  font-weight: 600;
+  transition: var(--transition-fast);
+}
+
+.btn-admin.primary {
+  background-color: var(--accent-gold);
+  color: var(--bg-primary);
+  border-color: var(--accent-gold);
+}
+
+.btn-admin.primary:hover {
+  background-color: var(--accent-gold-hover);
+}
+
+.btn-admin.danger {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #ff4d4d;
+  border-color: rgba(220, 53, 69, 0.2);
+}
+
+.btn-admin.danger:hover {
+  background-color: #ff4d4d;
+  color: var(--text-primary);
+}
+
+.btn-admin.secondary {
+  background-color: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-admin.secondary:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+/* Admin Form container */
+.admin-form-panel {
+  border-top: 1px solid var(--border-color);
+  padding-top: 2rem;
+  display: none;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.admin-form-panel.active {
+  display: block;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.admin-form-grid .full-width {
+  grid-column: span 3;
+}
+
+.admin-form-grid .half-width {
+  grid-column: span 2;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.form-control {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.65rem 1rem;
+  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.form-control:focus {
+  border-color: var(--accent-gold);
+}
+
+.form-checkbox-group {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  height: 100%;
+  padding-top: 1.25rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  accent-color: var(--accent-gold);
+  width: 16px;
+  height: 16px;
+}
+
+/* Modificaciones de badges en catalogo principal */
+.product-card-badges {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 5;
+}
+
+.main-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.35rem 0.75rem;
+}
+
+.main-badge.badge-sold {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.main-badge.badge-nostock {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.main-badge.badge-offer {
+  background-color: var(--accent-gold);
+  color: var(--bg-primary);
+}
+
+.product-card.card-disabled {
+  opacity: 0.7;
+}
+
+.product-card.card-disabled .product-card-img {
+  filter: grayscale(80%) brightness(0.6);
+}
+
+.product-card.card-disabled:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--border-color);
+}
+
+.add-cart-btn-disabled {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-muted) !important;
+  cursor: not-allowed !important;
+}
+
+.add-cart-btn-disabled:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-muted) !important;
+}
+
+@media (max-width: 768px) {
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-form-grid .full-width,
+  .admin-form-grid .half-width {
+    grid-column: span 1;
+  }
+  .form-checkbox-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-top: 0;
+  }
+}
