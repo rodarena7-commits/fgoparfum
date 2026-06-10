@@ -1490,8 +1490,8 @@ function hidePWABanners() {
 
 function checkStandaloneStatus() {
   if (isStandalone) {
-    // Show PWA banners even when running inside the standalone app
-    showPWABanners();
+    // Hide all install UI when running inside the standalone app
+    hidePWABanners();
     return;
   }
   
@@ -1543,7 +1543,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   deferredPrompt = e;
   
   if (isStandalone) {
-    showPWABanners();
+    hidePWABanners();
     return;
   }
   
