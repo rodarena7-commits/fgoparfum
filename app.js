@@ -338,15 +338,28 @@ function initEventListeners() {
 
   // PWA banner buttons
   if (doc.btnPwaClose) {
-    doc.btnPwaClose.addEventListener('click', () => {
+    doc.btnPwaClose.addEventListener('click', (e) => {
+      e.stopPropagation();
       doc.pwaBanner.classList.remove('show');
+      sessionStorage.setItem('pwa-dismissed', 'true');
     });
   }
   if (doc.btnPwaInstall) {
-    doc.btnPwaInstall.addEventListener('click', triggerPWAInstall);
+    doc.btnPwaInstall.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerPWAInstall();
+    });
   }
   if (doc.btnPwaHeroInstall) {
-    doc.btnPwaHeroInstall.addEventListener('click', triggerPWAInstall);
+    doc.btnPwaHeroInstall.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerPWAInstall();
+    });
+  }
+  if (doc.pwaHeroBanner) {
+    doc.pwaHeroBanner.addEventListener('click', () => {
+      triggerPWAInstall();
+    });
   }
   
   // Admin Panel Event Listeners
@@ -1450,34 +1463,78 @@ function registerServiceWorker() {
 // Standalone status checker
 const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
+function showPWABanners() {
+  if (doc.pwaHeroBanner) {
+    doc.pwaHeroBanner.classList.add('show');
+    doc.pwaHeroBanner.style.display = 'inline-flex';
+  }
+  
+  setTimeout(() => {
+    if (!sessionStorage.getItem('pwa-dismissed') && doc.pwaBanner) {
+      doc.pwaBanner.classList.add('show');
+      doc.pwaBanner.style.display = 'flex';
+    }
+  }, 4000);
+}
+
+function hidePWABanners() {
+  if (doc.pwaBanner) {
+    doc.pwaBanner.classList.remove('show');
+    doc.pwaBanner.style.display = 'none';
+  }
+  if (doc.pwaHeroBanner) {
+    doc.pwaHeroBanner.classList.remove('show');
+    doc.pwaHeroBanner.style.display = 'none';
+  }
+}
+
 function checkStandaloneStatus() {
   if (isStandalone) {
-    // Hide all install UI if already running inside the app
-    if (doc.pwaHeroBanner) doc.pwaHeroBanner.style.display = 'none';
-    if (doc.pwaBanner) doc.pwaBanner.style.display = 'none';
+    // Show PWA banners even when running inside the standalone app
+    showPWABanners();
     return;
   }
   
-  // Check if iOS and not standalone
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  if (isIOS) {
-    // Show PWA helper elements for iOS users
-    if (doc.pwaHeroBanner) {
-      doc.pwaHeroBanner.classList.add('show');
+  // If not standalone: check if already installed in localStorage
+  const isInstalled = localStorage.getItem('pwa-installed') === 'true';
+  if (isInstalled) {
+    hidePWABanners();
+  } else {
+    // If not installed, show them
+    showPWABanners();
+    
+    // Customization for iOS instructions
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      setTimeout(() => {
+        if (!sessionStorage.getItem('pwa-dismissed') && doc.pwaBanner) {
+          const descEl = doc.pwaBanner.querySelector('.pwa-banner-text-desc');
+          if (descEl) {
+            descEl.textContent = "Toca el botón compartir de Safari y selecciona 'Agregar a inicio'.";
+          }
+          const installBtn = document.getElementById('btn-pwa-install');
+          if (installBtn) {
+            installBtn.textContent = "Instrucciones";
+          }
+        }
+      }, 4100);
     }
-    setTimeout(() => {
-      if (!sessionStorage.getItem('pwa-dismissed') && doc.pwaBanner) {
-        doc.pwaBanner.classList.add('show');
-        const descEl = doc.pwaBanner.querySelector('.pwa-banner-text-desc');
-        if (descEl) {
-          descEl.textContent = "Toca el botón compartir de Safari y selecciona 'Agregar a inicio'.";
-        }
-        const installBtn = document.getElementById('btn-pwa-install');
-        if (installBtn) {
-          installBtn.textContent = "Instrucciones";
-        }
+  }
+
+  // Asynchronous API to check if already installed (Chrome/Edge/Android)
+  if (navigator.getInstalledRelatedApps) {
+    navigator.getInstalledRelatedApps().then(apps => {
+      if (apps.length > 0) {
+        localStorage.setItem('pwa-installed', 'true');
+        hidePWABanners();
+      } else {
+        localStorage.removeItem('pwa-installed');
+        // Only show if not standalone
+        showPWABanners();
       }
-    }, 4000);
+    }).catch(err => {
+      console.log('Error checking installed apps:', err);
+    });
   }
 }
 
@@ -1485,25 +1542,31 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   
-  if (isStandalone) return;
-  
-  if (doc.pwaHeroBanner) {
-    doc.pwaHeroBanner.classList.add('show');
+  if (isStandalone) {
+    showPWABanners();
+    return;
   }
   
-  setTimeout(() => {
-    if (!sessionStorage.getItem('pwa-dismissed') && doc.pwaBanner) {
-      doc.pwaBanner.classList.add('show');
-    }
-  }, 4000);
+  const isInstalled = localStorage.getItem('pwa-installed') === 'true';
+  if (!isInstalled) {
+    showPWABanners();
+  } else {
+    hidePWABanners();
+  }
 });
 
 function triggerPWAInstall() {
+  if (isStandalone) {
+    showToast("¡FGOParfum ya está abierta como aplicación! 🚀");
+    return;
+  }
+
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
         console.log('El usuario aceptó la instalación de la PWA.');
+        localStorage.setItem('pwa-installed', 'true');
         hidePWABanners();
       } else {
         console.log('El usuario canceló la instalación de la PWA.');
@@ -1521,17 +1584,12 @@ function triggerPWAInstall() {
   }
 }
 
-function hidePWABanners() {
-  if (doc.pwaBanner) doc.pwaBanner.classList.remove('show');
-  if (doc.pwaHeroBanner) {
-    doc.pwaHeroBanner.classList.remove('show');
-    doc.pwaHeroBanner.style.display = 'none'; // Keep hidden permanently
-  }
-}
-
 window.addEventListener('appinstalled', (evt) => {
   console.log('La aplicación fue instalada con éxito en el sistema.');
-  hidePWABanners();
+  localStorage.setItem('pwa-installed', 'true');
+  if (!isStandalone) {
+    hidePWABanners();
+  }
   showToast('¡FGOParfum instalada con éxito en tu dispositivo!');
 });
 
