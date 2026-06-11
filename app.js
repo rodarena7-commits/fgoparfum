@@ -18,6 +18,152 @@ let logoClickTimeout = null;
 let isAdminAuthenticated = false;
 let uploadedImageDataUrl = '';
 
+// ----------------------------------------------------------------
+// Dynamic Contacts State and Helpers
+// ----------------------------------------------------------------
+const DEFAULT_CONTACTS = [
+  {
+    id: "contact-whatsapp",
+    type: "whatsapp",
+    name: "WhatsApp",
+    text: "+54 9 11 3593-1975",
+    link: "https://wa.me/5491135931975",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+  },
+  {
+    id: "contact-email",
+    type: "email",
+    name: "Email",
+    text: "fgoparfum@gmaill.com",
+    link: "mailto:fgoparfum@gmaill.com",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Gmail_Icon.svg"
+  },
+  {
+    id: "contact-instagram",
+    type: "social",
+    name: "Instagram",
+    text: "Instagram",
+    link: "https://instagram.com/",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg"
+  },
+  {
+    id: "contact-facebook",
+    type: "social",
+    name: "Facebook",
+    text: "Facebook",
+    link: "https://facebook.com/",
+    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
+  }
+];
+
+function getStoredContacts() {
+  const stored = localStorage.getItem('fgoparfum_contacts');
+  if (stored) {
+    try {
+      return JSON.parse(stored);
+    } catch (e) {
+      console.error("Error loading contacts from localStorage:", e);
+    }
+  }
+  return DEFAULT_CONTACTS;
+}
+
+function saveContacts(contacts) {
+  localStorage.setItem('fgoparfum_contacts', JSON.stringify(contacts));
+  renderContacts();
+}
+
+function getActiveWhatsAppNumber() {
+  const contacts = getStoredContacts();
+  const waContact = contacts.find(c => c.type === 'whatsapp');
+  if (waContact) {
+    const match = waContact.link.match(/wa\.me\/(\d+)/) || waContact.link.match(/phone=(\d+)/);
+    if (match) {
+      return match[1];
+    }
+    const digits = waContact.link.replace(/\D/g, '');
+    if (digits.length >= 8) return digits;
+  }
+  return CONFIG.whatsappNumber;
+}
+
+function renderContacts() {
+  const contacts = getStoredContacts();
+  
+  const footerContactsList = document.getElementById('footer-contacts-list');
+  if (footerContactsList) {
+    const nonSocialContacts = contacts.filter(c => c.type !== 'social');
+    footerContactsList.innerHTML = nonSocialContacts.map(c => `
+      <div class="footer-contact-item" style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+        <img src="${c.logoUrl}" alt="${c.name}" class="footer-contact-icon-img" style="width: 20px; height: 20px; object-fit: contain; margin-right: 0.75rem; border-radius: 4px;">
+        <span><a href="${c.link}" target="_blank" style="color: var(--text-secondary); transition: var(--transition-smooth); font-size: 0.8rem;">${c.text}</a></span>
+      </div>
+    `).join('');
+  }
+  
+  const footerSocialsList = document.getElementById('footer-socials-list');
+  if (footerSocialsList) {
+    const socialContacts = contacts.filter(c => c.type === 'social');
+    footerSocialsList.innerHTML = socialContacts.map(c => `
+      <a href="${c.link}" target="_blank" rel="noopener" class="social-icon" aria-label="${c.name}" style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-color); background: rgba(255,255,255,0.02); transition: var(--transition-smooth); margin-right: 0.5rem;">
+        <img src="${c.logoUrl}" alt="${c.name}" style="width: 18px; height: 18px; object-fit: contain;">
+      </a>
+    `).join('');
+  }
+  
+  const adminContactsTableBody = document.getElementById('admin-contacts-table-body');
+  if (adminContactsTableBody) {
+    adminContactsTableBody.innerHTML = contacts.map(c => `
+      <tr>
+        <td>
+          <img src="${c.logoUrl}" alt="${c.name}" style="width: 24px; height: 24px; object-fit: contain; border-radius: 4px; background: rgba(255,255,255,0.05); padding: 2px;">
+        </td>
+        <td style="font-weight: 600;">${c.name}</td>
+        <td>
+          <span class="badge-admin" style="text-transform: capitalize; background: ${c.type === 'whatsapp' ? 'rgba(37, 211, 102, 0.1)' : c.type === 'email' ? 'rgba(214, 76, 56, 0.1)' : 'rgba(212, 175, 55, 0.1)'}; color: ${c.type === 'whatsapp' ? '#25D366' : c.type === 'email' ? '#d64c38' : 'var(--accent-gold)'};">
+            ${c.type}
+          </span>
+        </td>
+        <td>${c.text}</td>
+        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.7rem; color: var(--text-secondary);">${c.link}</td>
+        <td style="text-align: right;">
+          <button type="button" class="btn-admin secondary" onclick="editContact('${c.id}')" style="padding: 0.35rem 0.6rem; font-size: 0.65rem; margin-right: 0.25rem;"><i class="fas fa-edit"></i></button>
+          <button type="button" class="btn-admin secondary" onclick="deleteContact('${c.id}')" style="padding: 0.35rem 0.6rem; font-size: 0.65rem; color: #ff4d4d;"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>
+    `).join('');
+  }
+}
+
+function editContact(id) {
+  const contacts = getStoredContacts();
+  const contact = contacts.find(c => c.id === id);
+  if (!contact) return;
+  
+  document.getElementById('form-contact-id').value = contact.id;
+  document.getElementById('form-contact-type').value = contact.type;
+  document.getElementById('form-contact-name').value = contact.name;
+  document.getElementById('form-contact-text').value = contact.text;
+  document.getElementById('form-contact-link').value = contact.link;
+  document.getElementById('form-contact-logo').value = contact.logoUrl;
+  
+  document.getElementById('contact-form-title').textContent = "Editar Contacto / Red Social";
+  document.getElementById('admin-contact-form-panel').style.display = 'block';
+  document.getElementById('admin-contact-form-panel').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteContact(id) {
+  if (confirm("¿Estás seguro de que deseas eliminar este contacto / red social?")) {
+    const contacts = getStoredContacts();
+    const filtered = contacts.filter(c => c.id !== id);
+    saveContacts(filtered);
+    showToast("Contacto eliminado con éxito");
+  }
+}
+
+window.editContact = editContact;
+window.deleteContact = deleteContact;
+
 // DOM Elements
 const doc = {
   header: document.getElementById('main-header'),
@@ -175,6 +321,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Load hero background
   loadHeroBackground();
+  
+  // Load contacts
+  renderContacts();
 });
 
 // Event Listeners Registration
@@ -530,6 +679,60 @@ function initEventListeners() {
       if (!dbSearchInput.contains(e.target) && !dbSearchResults.contains(e.target)) {
         dbSearchResults.style.display = 'none';
       }
+    });
+  }
+  
+  // Admin Contacts Management Event Listeners
+  const btnAddContactToggle = document.getElementById('btn-admin-add-contact-toggle');
+  const contactFormPanel = document.getElementById('admin-contact-form-panel');
+  const btnContactFormCancel = document.getElementById('btn-contact-form-cancel');
+  const adminContactForm = document.getElementById('admin-contact-form');
+  
+  if (btnAddContactToggle) {
+    btnAddContactToggle.addEventListener('click', () => {
+      adminContactForm.reset();
+      document.getElementById('form-contact-id').value = '';
+      document.getElementById('contact-form-title').textContent = "Añadir Contacto";
+      contactFormPanel.style.display = contactFormPanel.style.display === 'none' ? 'block' : 'none';
+    });
+  }
+  
+  if (btnContactFormCancel) {
+    btnContactFormCancel.addEventListener('click', () => {
+      contactFormPanel.style.display = 'none';
+      adminContactForm.reset();
+    });
+  }
+  
+  if (adminContactForm) {
+    adminContactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const id = document.getElementById('form-contact-id').value;
+      const type = document.getElementById('form-contact-type').value;
+      const name = document.getElementById('form-contact-name').value.trim();
+      const text = document.getElementById('form-contact-text').value.trim();
+      const link = document.getElementById('form-contact-link').value.trim();
+      const logoUrl = document.getElementById('form-contact-logo').value.trim();
+      
+      const contacts = getStoredContacts();
+      
+      if (id) {
+        // Edit existing
+        const index = contacts.findIndex(c => c.id === id);
+        if (index !== -1) {
+          contacts[index] = { id, type, name, text, link, logoUrl };
+        }
+      } else {
+        // Add new
+        const newId = 'contact-' + Date.now();
+        contacts.push({ id: newId, type, name, text, link, logoUrl });
+      }
+      
+      saveContacts(contacts);
+      contactFormPanel.style.display = 'none';
+      adminContactForm.reset();
+      showToast("Contacto guardado con éxito");
     });
   }
 }
@@ -943,7 +1146,7 @@ function sendOrderToWhatsApp() {
   message += `_Pedido generado desde FGOParfum Web PWA._`;
   
   const encodedText = encodeURIComponent(message);
-  const whatsappUrl = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodedText}`;
+  const whatsappUrl = `https://wa.me/${getActiveWhatsAppNumber()}?text=${encodedText}`;
   
   window.open(whatsappUrl, '_blank');
 }
@@ -951,7 +1154,7 @@ function sendOrderToWhatsApp() {
 function contactProductWhatsApp(name, id) {
   const message = `Hola! Quisiera consultar sobre el producto: *${name}* (ID: ${id}).`;
   const encodedText = encodeURIComponent(message);
-  const whatsappUrl = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodedText}`;
+  const whatsappUrl = `https://wa.me/${getActiveWhatsAppNumber()}?text=${encodedText}`;
   window.open(whatsappUrl, '_blank');
 }
 
