@@ -7,6 +7,168 @@ const CONFIG = {
 
 const PRODUCTS = [
   {
+    "id": "sheru-335446714",
+    "name": "Textil Woody &amp; Jessie",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-woody-y-jessie-20898b3273161542b817750687434911-640-0.webp",
+    "featured": false,
+    "family": "amaderado",
+    "familyLabel": "Amaderado",
+    "description": "Experimenta el encantador aroma Textil Woody &amp; Jessie. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia amaderado.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335444399",
+    "name": "Lotso peluche Disney",
+    "category": "otros",
+    "categoryLabel": "Otros",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-lotso-saphirus-fb_1_11zon-4254fe34d7cb00631d17750682509657-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Lotso peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335444562",
+    "name": "Stitch peluche Disney",
+    "category": "otros",
+    "categoryLabel": "Otros",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-stitch-saphirus-fb_5_11zon-f25a7d403b05c055f717750682931618-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Stitch peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335444916",
+    "name": "Olaf peluche Disney",
+    "category": "otros",
+    "categoryLabel": "Otros",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-olaf-saphirus-fb_4_11zon-829b62d51489a8abb617750683676863-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Olaf peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335445086",
+    "name": "Minnie peluche Disney",
+    "category": "otros",
+    "categoryLabel": "Otros",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-minnie-saphirus-fb_3_11zon-3973ef1166e303dbf217750683913136-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Minnie peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335445194",
+    "name": "Mickey peluche Disney",
+    "category": "otros",
+    "categoryLabel": "Otros",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-mickey-saphirus-fb_2_11zon-8317a5681a118198a717750684310289-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Mickey peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335446066",
+    "name": "Textil Star Wars Darth Vader",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-darth-vader-b2e65e83c8051d302c17750685735561-640-0.webp",
+    "featured": false,
+    "family": "amaderado",
+    "familyLabel": "Amaderado",
+    "description": "Experimenta el encantador aroma Textil Star Wars Darth Vader. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia amaderado.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335446392",
+    "name": "Textil Rayo Mcqueen",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-cars-0e6417b9346442fd0017750686736943-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Textil Rayo Mcqueen. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335446572",
+    "name": "Textil Ángel",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-angel-0a3c31be3a7a1020b417750687073740-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Textil Ángel. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
     "id": "sheru-343579335",
     "name": "Difusor spicy lemon 60ml",
     "category": "difusores",
@@ -25,215 +187,35 @@ const PRODUCTS = [
     }
   },
   {
-    "id": "sheru-343579082",
-    "name": "Difusor buttermilk 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-buttermilk-fb-saphirus-1-f3650bcbc80c0752c217786098603148-640-0.webp",
-    "featured": false,
-    "family": "dulce",
-    "familyLabel": "Dulce/Gourmet",
-    "description": "Experimenta el encantador aroma Difusor buttermilk 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de buttermilk 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343578832",
-    "name": "Difusor amanecer citríco 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-amanecer-citrico-fb-saphirus-color-1-9c5ec361d0c7a5487017786098025586-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Difusor amanecer citríco 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de amanecer citríco 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343578554",
-    "name": "Difusor frutas exóticas 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-frutas-exoticas-fb-saphirus-color-1-5899dc5df41d1d7a7717786097796651-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Difusor frutas exóticas 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de frutas exóticas 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343578427",
-    "name": "Difusor corazón de moras 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-corazon-moras-fb-saphirus-color-1-5cdd79c2d2b38bcf2717786097431194-640-0.webp",
-    "featured": false,
-    "family": "frutal",
-    "familyLabel": "Frutal",
-    "description": "Experimenta el encantador aroma Difusor corazón de moras 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de corazón de moras 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343577903",
-    "name": "Difusor honey elixir 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/https___academia-saphirus-com-ar_wp-content_uploads_2026_04_20260429-difusor-mini-honey-elixir-fb-saphirus-color-1024x1024-7da47c179be2508ddf17786096765299-640-0.webp",
-    "featured": false,
-    "family": "dulce",
-    "familyLabel": "Dulce/Gourmet",
-    "description": "Experimenta el encantador aroma Difusor honey elixir 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de honey elixir 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343577661",
-    "name": "Difusor bomba tropical 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-bomba-tropical-fb-saphirus-color-1-e25fdca6e03db3033817786096373784-640-0.webp",
-    "featured": false,
-    "family": "frutal",
-    "familyLabel": "Frutal",
-    "description": "Experimenta el encantador aroma Difusor bomba tropical 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de bomba tropical 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343577501",
-    "name": "Difusor jardín marino 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-jardin-marino-fb-saphirus-color-1-9e277e4a5ff889428517786096065371-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Difusor jardín marino 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de jardín marino 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343577273",
-    "name": "Difusor vainilla caramel 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-vanilla-caramel-fb-saphirus-1-2d31550b97f1e987bf17786095550556-640-0.webp",
-    "featured": false,
-    "family": "dulce",
-    "familyLabel": "Dulce/Gourmet",
-    "description": "Experimenta el encantador aroma Difusor vainilla caramel 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de vainilla caramel 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343576967",
-    "name": "Difusor sweet bubble 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-sweet-bubble-fb-saphirus-color-1-ea6b975142d512ff0217786095157473-640-0.webp",
-    "featured": false,
-    "family": "frutal",
-    "familyLabel": "Frutal",
-    "description": "Experimenta el encantador aroma Difusor sweet bubble 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de sweet bubble 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343576641",
-    "name": "Difusor strawberry and roses 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-strawberry-and-roses-fb-saphirus-color-1-dfb403485639af198817786094712207-640-0.webp",
-    "featured": false,
-    "family": "floral",
-    "familyLabel": "Floral",
-    "description": "Experimenta el encantador aroma Difusor strawberry and roses 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de strawberry and roses 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343576352",
-    "name": "Difusor brisa floral 60ml",
-    "category": "difusores",
-    "categoryLabel": "Difusor Saphirus 60ml",
-    "price": 3000,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260429-difusor-mini-brisa-floral-fb-saphirus-color-1-67df500f6ca953238617786093442463-640-0.webp",
-    "featured": false,
-    "family": "floral",
-    "familyLabel": "Floral",
-    "description": "Experimenta el encantador aroma Difusor brisa floral 60ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Notas aromáticas de salida que perfuman inmediatamente el ambiente.",
-      "corazon": "Esencia concentrada de brisa floral 60ml.",
-      "fondo": "Fondo agradable y de larga duración en tejidos o el aire."
-    }
-  },
-  {
-    "id": "sheru-343560928",
-    "name": "Desengrasante 500ml",
-    "category": "otros",
-    "categoryLabel": "Otros",
+    "id": "sheru-335446860",
+    "name": "Textil Woody &amp; Buzz Lightyear",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
     "price": 0,
     "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251016-desengrasante-shiny-2-01kbdk7dgtdq5c6y86c90fjksd-b43e4bc57bb40afc4c17786053910095-640-0.webp",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-woody-buzz-182c71a073be46e96117750687751111-640-0.webp",
+    "featured": false,
+    "family": "amaderado",
+    "familyLabel": "Amaderado",
+    "description": "Experimenta el encantador aroma Textil Woody &amp; Buzz Lightyear. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia amaderado.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335447020",
+    "name": "Textil Stitch &amp; Ángel",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-stitch-y-angel-76353377fee2afb55917750688070260-640-0.webp",
     "featured": false,
     "family": "fresco",
     "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Desengrasante 500ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "description": "Experimenta el encantador aroma Textil Stitch &amp; Ángel. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
     "notes": {
       "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
       "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
@@ -241,17 +223,17 @@ const PRODUCTS = [
     }
   },
   {
-    "id": "sheru-343560748",
-    "name": "Limpiavidrios 500ml",
-    "category": "otros",
-    "categoryLabel": "Otros",
+    "id": "sheru-335447201",
+    "name": "Textil Stitch",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
     "price": 0,
     "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251016-limpiavidrios-shiny-4-700x700-01kb0s56a9zss0qtxa5qex6v91-23bbda96da6d41f11817786053381645-640-0.webp",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-stitch-e2db717e0ae228772817750688352994-640-0.webp",
     "featured": false,
     "family": "fresco",
     "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Limpiavidrios 500ml. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "description": "Experimenta el encantador aroma Textil Stitch. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
     "notes": {
       "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
       "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
@@ -259,35 +241,53 @@ const PRODUCTS = [
     }
   },
   {
-    "id": "sheru-337190162",
-    "name": "Limpiador Líquido Flores Delicadas",
-    "category": "otros",
-    "categoryLabel": "Otros",
+    "id": "sheru-335447430",
+    "name": "Textil Marvel Spiderman",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
     "price": 0,
     "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260226-limpiador-liquido-flores-delicadas-shiny-73940b3df4aa90a49e17758379384388-640-0.webp",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-spiderman-d8838eb2a983f029d417750688884391-640-0.webp",
     "featured": false,
-    "family": "floral",
-    "familyLabel": "Floral",
-    "description": "Experimenta el encantador aroma Limpiador Líquido Flores Delicadas. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Textil Marvel Spiderman. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
     "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia floral.",
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
       "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
       "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
     }
   },
   {
-    "id": "sheru-337190004",
-    "name": "Limpiador Líquido Triunfo Oceánico",
-    "category": "otros",
-    "categoryLabel": "Otros",
+    "id": "sheru-335447579",
+    "name": "Textil Star Wars R2D2",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
     "price": 0,
     "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20260226-limpiador-liquido-triunfo-oceanico-shiny-bdb037b11a38d57f9e17758378920520-640-0.webp",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-r2d2-4d605195c2a77cafa317750689340384-640-0.webp",
     "featured": false,
     "family": "fresco",
     "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Limpiador Líquido Triunfo Oceánico. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "description": "Experimenta el encantador aroma Textil Star Wars R2D2. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
+    "notes": {
+      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
+      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
+      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
+    }
+  },
+  {
+    "id": "sheru-335447724",
+    "name": "Textil Disney Princesa",
+    "category": "textiles",
+    "categoryLabel": "Aromatizante Textil",
+    "price": 0,
+    "size": "",
+    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-princesa-1016a4a3549f78c73c17750689619318-640-0.webp",
+    "featured": false,
+    "family": "fresco",
+    "familyLabel": "Fresco/Herbal",
+    "description": "Experimenta el encantador aroma Textil Disney Princesa. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
     "notes": {
       "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
       "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
@@ -864,276 +864,6 @@ const PRODUCTS = [
     "family": "fresco",
     "familyLabel": "Fresco/Herbal",
     "description": "Experimenta el encantador aroma Textil Moana. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335447724",
-    "name": "Textil Disney Princesa",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-princesa-1016a4a3549f78c73c17750689619318-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Textil Disney Princesa. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335447579",
-    "name": "Textil Star Wars R2D2",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-r2d2-4d605195c2a77cafa317750689340384-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Textil Star Wars R2D2. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335447430",
-    "name": "Textil Marvel Spiderman",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-spiderman-d8838eb2a983f029d417750688884391-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Textil Marvel Spiderman. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335447201",
-    "name": "Textil Stitch",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-stitch-e2db717e0ae228772817750688352994-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Textil Stitch. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335447020",
-    "name": "Textil Stitch &amp; Ángel",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-stitch-y-angel-76353377fee2afb55917750688070260-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Textil Stitch &amp; Ángel. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335446860",
-    "name": "Textil Woody &amp; Buzz Lightyear",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-woody-buzz-182c71a073be46e96117750687751111-640-0.webp",
-    "featured": false,
-    "family": "amaderado",
-    "familyLabel": "Amaderado",
-    "description": "Experimenta el encantador aroma Textil Woody &amp; Buzz Lightyear. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia amaderado.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335446714",
-    "name": "Textil Woody &amp; Jessie",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-woody-y-jessie-20898b3273161542b817750687434911-640-0.webp",
-    "featured": false,
-    "family": "amaderado",
-    "familyLabel": "Amaderado",
-    "description": "Experimenta el encantador aroma Textil Woody &amp; Jessie. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia amaderado.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335446572",
-    "name": "Textil Ángel",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-angel-0a3c31be3a7a1020b417750687073740-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Textil Ángel. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335446392",
-    "name": "Textil Rayo Mcqueen",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-cars-0e6417b9346442fd0017750686736943-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Textil Rayo Mcqueen. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335446066",
-    "name": "Textil Star Wars Darth Vader",
-    "category": "textiles",
-    "categoryLabel": "Aromatizante Textil",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251125-textil-disney-darth-vader-b2e65e83c8051d302c17750685735561-640-0.webp",
-    "featured": false,
-    "family": "amaderado",
-    "familyLabel": "Amaderado",
-    "description": "Experimenta el encantador aroma Textil Star Wars Darth Vader. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia amaderado.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335445194",
-    "name": "Mickey peluche Disney",
-    "category": "otros",
-    "categoryLabel": "Otros",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-mickey-saphirus-fb_2_11zon-8317a5681a118198a717750684310289-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Mickey peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335445086",
-    "name": "Minnie peluche Disney",
-    "category": "otros",
-    "categoryLabel": "Otros",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-minnie-saphirus-fb_3_11zon-3973ef1166e303dbf217750683913136-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Minnie peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335444916",
-    "name": "Olaf peluche Disney",
-    "category": "otros",
-    "categoryLabel": "Otros",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-olaf-saphirus-fb_4_11zon-829b62d51489a8abb617750683676863-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Olaf peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335444562",
-    "name": "Stitch peluche Disney",
-    "category": "otros",
-    "categoryLabel": "Otros",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-stitch-saphirus-fb_5_11zon-f25a7d403b05c055f717750682931618-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Stitch peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
-    "notes": {
-      "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
-      "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
-      "fondo": "Fondo cálido, persistente y sofisticado de maderas o acordes suaves."
-    }
-  },
-  {
-    "id": "sheru-335444399",
-    "name": "Lotso peluche Disney",
-    "category": "otros",
-    "categoryLabel": "Otros",
-    "price": 0,
-    "size": "",
-    "image": "https://dcdn-us.mitiendanube.com/stores/003/593/083/products/20251203-peluches-lotso-saphirus-fb_1_11zon-4254fe34d7cb00631d17750682509657-640-0.webp",
-    "featured": false,
-    "family": "fresco",
-    "familyLabel": "Fresco/Herbal",
-    "description": "Experimenta el encantador aroma Lotso peluche Disney. Una fragancia de alta concentración seleccionada especialmente de la línea Saphirus / Milano para deleitar tus sentidos.",
     "notes": {
       "salida": "Acordes de salida vibrantes y característicos de la familia fresco/herbal.",
       "corazon": "Cuerpo aromático equilibrado y elegante que define la personalidad del perfume.",
