@@ -34,8 +34,8 @@ const DEFAULT_CONTACTS = [
     id: "contact-email",
     type: "email",
     name: "Email",
-    text: "fgoparfum@gmaill.com",
-    link: "mailto:fgoparfum@gmaill.com",
+    text: "fgoparfum@gmail.com",
+    link: "mailto:fgoparfum@gmail.com",
     logoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Gmail_Icon.svg"
   },
   {
@@ -230,6 +230,18 @@ const doc = {
   formImageFile: document.getElementById('form-image-file'),
   formPriceOriginal: document.getElementById('form-price-original'),
   formStockCount: document.getElementById('form-stock-count'),
+  
+  // Welcome and Visitor Log Elements
+  welcomeModal: document.getElementById('welcome-modal'),
+  btnCloseWelcome: document.getElementById('btn-close-welcome'),
+  welcomeForm: document.getElementById('welcome-form'),
+  welcomeNameInput: document.getElementById('welcome-name-input'),
+  welcomeEmailInput: document.getElementById('welcome-email-input'),
+  btnSkipWelcome: document.getElementById('btn-skip-welcome'),
+  visitorTotalCount: document.getElementById('visitor-total-count'),
+  adminVisitorsTableBody: document.getElementById('admin-visitors-table-body'),
+  btnRefreshVisitors: document.getElementById('btn-refresh-visitors'),
+  btnClearVisitors: document.getElementById('btn-clear-visitors'),
 };
 
 // ----------------------------------------------------------------
@@ -324,6 +336,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Load contacts
   renderContacts();
+  
+  // Check visitor registration modal
+  checkVisitorRegistration();
 });
 
 // Event Listeners Registration
@@ -733,6 +748,43 @@ function initEventListeners() {
       contactFormPanel.style.display = 'none';
       adminContactForm.reset();
       showToast("Contacto guardado con éxito");
+    });
+  }
+
+  // Welcome Modal event listeners
+  if (doc.welcomeForm) {
+    doc.welcomeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = doc.welcomeNameInput.value.trim();
+      const email = doc.welcomeEmailInput.value.trim();
+      registerVisitor(name, email);
+    });
+  }
+
+  if (doc.btnSkipWelcome) {
+    doc.btnSkipWelcome.addEventListener('click', () => {
+      registerVisitor("Usuario Anónimo", "-");
+    });
+  }
+
+  if (doc.btnCloseWelcome) {
+    doc.btnCloseWelcome.addEventListener('click', () => {
+      registerVisitor("Usuario Anónimo", "-");
+    });
+  }
+
+  // Admin Visitor controls
+  if (doc.btnRefreshVisitors) {
+    doc.btnRefreshVisitors.addEventListener('click', () => {
+      loadVisitorsList();
+    });
+  }
+
+  if (doc.btnClearVisitors) {
+    doc.btnClearVisitors.addEventListener('click', () => {
+      if (confirm("¿Estás seguro de que deseas eliminar todo el registro de visitantes? Esta acción no se puede deshacer.")) {
+        clearVisitorsList();
+      }
     });
   }
 }
@@ -1362,6 +1414,7 @@ function checkAdminPassword() {
     }
     
     renderAdminTable();
+    loadVisitorsList();
     showToast("Acceso Autorizado");
   } else {
     doc.adminAuthError.style.display = 'block';
@@ -1805,4 +1858,213 @@ function showToast(message) {
   setTimeout(() => {
     doc.toast.classList.remove('show');
   }, 3500);
+}
+
+// ----------------------------------------------------------------
+// Visitor Registration and Statistics
+// ----------------------------------------------------------------
+const KVDB_BUCKET_ID = "P1jERyvF2sckMkTzTUQbHk";
+const KVDB_URL = `https://kvdb.io/${KVDB_BUCKET_ID}/visitors_list`;
+
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+    return "Tablet";
+  }
+  if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+    return "Celular";
+  }
+  return "Computadora";
+}
+
+function checkVisitorRegistration() {
+  const isRegistered = localStorage.getItem('fgoparfum_visitor_registered');
+  if (!isRegistered) {
+    if (doc.welcomeModal) {
+      doc.welcomeModal.classList.add('open');
+      if (doc.backdrop) doc.backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+}
+
+async function registerVisitor(name, email) {
+  const visitorData = {
+    name: name,
+    email: email,
+    device: getDeviceType(),
+    date: new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })
+  };
+
+  // Close welcome modal immediately to not block user experience
+  if (doc.welcomeModal) doc.welcomeModal.classList.remove('open');
+  if (doc.backdrop && (!doc.adminModal || !doc.adminModal.classList.contains('open')) && (!doc.cartDrawer || !doc.cartDrawer.classList.contains('open'))) {
+    doc.backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  
+  localStorage.setItem('fgoparfum_visitor_registered', 'true');
+  localStorage.setItem('fgoparfum_visitor_name', name);
+  localStorage.setItem('fgoparfum_visitor_email', email);
+
+  // Save visitor in local log cache as backup/immediate load
+  let localLogs = [];
+  try {
+    localLogs = JSON.parse(localStorage.getItem('fgoparfum_local_visitors') || '[]');
+  } catch(e) {}
+  localLogs.push(visitorData);
+  localStorage.setItem('fgoparfum_local_visitors', JSON.stringify(localLogs));
+
+  // Try to write to cloud KV database
+  try {
+    const res = await fetch(KVDB_URL);
+    let remoteVisitors = [];
+    if (res.status === 200) {
+      remoteVisitors = await res.json();
+    } else if (res.status === 403) {
+      console.warn("KVdb requires email verification. Visitor logged locally.");
+      return;
+    }
+    
+    if (!Array.isArray(remoteVisitors)) {
+      remoteVisitors = [];
+    }
+    remoteVisitors.push(visitorData);
+    
+    const writeRes = await fetch(KVDB_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(remoteVisitors)
+    });
+    
+    if (writeRes.ok) {
+      console.log("Visitor registered in cloud successfully.");
+      localStorage.setItem('fgoparfum_local_visitors', JSON.stringify(remoteVisitors));
+    } else {
+      console.error("Failed to write to KVdb, status:", writeRes.status);
+    }
+  } catch (error) {
+    console.error("Error communicating with KVdb server:", error);
+  }
+}
+
+async function loadVisitorsList() {
+  if (!doc.adminVisitorsTableBody) return;
+  
+  doc.adminVisitorsTableBody.innerHTML = `
+    <tr>
+      <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem 1rem;">
+        <i class="fas fa-spinner fa-spin"></i> Cargando registro de visitantes...
+      </td>
+    </tr>
+  `;
+  
+  let visitors = [];
+  let isCloudActive = false;
+  let isForbidden = false;
+
+  try {
+    const res = await fetch(KVDB_URL);
+    if (res.status === 200) {
+      visitors = await res.json();
+      isCloudActive = true;
+    } else if (res.status === 403) {
+      isForbidden = true;
+    } else if (res.status === 404) {
+      visitors = [];
+      isCloudActive = true;
+    }
+  } catch (error) {
+    console.error("Error fetching visitors from cloud, using local cache:", error);
+  }
+
+  // Fallback to local storage if cloud is not active
+  if (!isCloudActive) {
+    try {
+      visitors = JSON.parse(localStorage.getItem('fgoparfum_local_visitors') || '[]');
+    } catch(e) {
+      visitors = [];
+    }
+  }
+
+  // Update total count
+  if (doc.visitorTotalCount) {
+    doc.visitorTotalCount.textContent = visitors.length;
+  }
+
+  if (isForbidden) {
+    doc.adminVisitorsTableBody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align: center; color: #ff9f43; padding: 1.5rem; line-height: 1.5;">
+          <i class="fas fa-exclamation-triangle"></i> <strong>Registro en la nube inactivo.</strong><br>
+          Por favor, haz clic en el link de verificación enviado por <strong>kvdb.io</strong> a tu correo <strong>fgoparfum@gmail.com</strong> para activar la base de datos.<br>
+          <span style="font-size: 0.75rem; color: var(--text-secondary);">(Mostrando datos locales temporales: ${visitors.length} registros)</span>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  if (!Array.isArray(visitors) || visitors.length === 0) {
+    doc.adminVisitorsTableBody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem 1rem;">
+          No hay visitantes registrados aún.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const sortedVisitors = [...visitors].reverse();
+
+  doc.adminVisitorsTableBody.innerHTML = sortedVisitors.map(v => `
+    <tr>
+      <td style="font-weight: 500;">${escapeHTML(v.name)}</td>
+      <td>${escapeHTML(v.email)}</td>
+      <td><span class="admin-subtitle-badge" style="font-size: 0.65rem; padding: 2px 6px; background: rgba(255,255,255,0.05);">${escapeHTML(v.device || 'Desconocido')}</span></td>
+      <td style="color: var(--text-secondary); font-size: 0.75rem;">${escapeHTML(v.date)}</td>
+    </tr>
+  `).join('');
+}
+
+async function clearVisitorsList() {
+  localStorage.setItem('fgoparfum_local_visitors', '[]');
+  
+  try {
+    const writeRes = await fetch(KVDB_URL, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify([])
+    });
+    
+    if (writeRes.ok) {
+      showToast("Registro de visitantes eliminado en la nube");
+    } else if (writeRes.status === 403) {
+      showToast("Registro local eliminado. Verifica tu correo de kvdb.io.");
+    } else {
+      showToast("Registro local eliminado");
+    }
+  } catch (error) {
+    showToast("Registro local eliminado");
+  }
+  
+  loadVisitorsList();
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;'
+    }[tag] || tag)
+  );
 }
